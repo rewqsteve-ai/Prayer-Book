@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prayer Book</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#EDF0F5; --surface:#FFFFFF; --ink:#1B2538; --muted:#5D6A80; --line:#D5DBE6;
+  --accent:#2B5A8A; --accent-ink:#FFFFFF; --glow:#D08A1E; --glow-soft:#F8ECD3; --on-glow:#2B1D05; --danger:#A33A3A;
+  --serif:'Newsreader', Georgia, 'Times New Roman', serif;
+  --sans:'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#0F1522; --surface:#182033; --ink:#E7ECF5; --muted:#93A0B8; --line:#2A3550;
+    --accent:#7FB0E6; --accent-ink:#0F1522; --glow:#E8B04E; --glow-soft:#3A2F17; --on-glow:#2B1D05; --danger:#E08A8A;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#0F1522; --surface:#182033; --ink:#E7ECF5; --muted:#93A0B8; --line:#2A3550;
+  --accent:#7FB0E6; --accent-ink:#0F1522; --glow:#E8B04E; --glow-soft:#3A2F17; --on-glow:#2B1D05; --danger:#E08A8A;
+}
+html { scroll-padding-top:env(safe-area-inset-top,0px); }
+*, *::before, *::after { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:16px; line-height:1.5; -webkit-text-size-adjust:100%; }
+main { max-width:560px; margin:0 auto; padding:20px 18px 110px; }
+h1, h2 { font-family:var(--serif); font-weight:500; margin:0; letter-spacing:-0.01em; }
+h1 { font-size:34px; line-height:1.1; }
+h2 { font-size:22px; line-height:1.2; margin-bottom:10px; }
+p { margin:0; }
+.sub { color:var(--muted); margin-top:6px; }
+.section { margin-top:28px; }
+.card { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
+.banner { background:var(--glow-soft); border:1px solid var(--glow); border-radius:14px; padding:12px 14px; margin-bottom:18px; display:flex; gap:12px; align-items:center; justify-content:space-between; }
+.banner p { font-weight:500; }
+.arc { display:block; width:100%; height:auto; margin-top:14px; overflow:visible; }
+.arc .node { cursor:pointer; outline:none; }
+.arc .node circle.ring { fill:var(--surface); stroke:var(--accent); stroke-width:2; }
+.arc .node.over circle.ring { stroke:var(--glow); stroke-width:3; }
+.arc .node.done circle.ring { fill:var(--glow); stroke:var(--glow); }
+.arc .node.off { opacity:.45; }
+.arc .node:focus-visible circle.ring { stroke:var(--ink); stroke-width:3; }
+.arc .dot { fill:var(--accent); }
+.arc .check { fill:none; stroke:var(--on-glow); stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
+.arc text { font-family:var(--sans); font-size:11px; fill:var(--muted); text-anchor:middle; }
+.streak { display:flex; align-items:baseline; gap:8px; margin-top:6px; }
+.streak b { font-family:var(--serif); font-size:28px; font-weight:500; color:var(--glow); }
+.rows { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+.row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.row .grow { flex:1; min-width:0; }
+.slot-label { font-weight:500; }
+.small { font-size:13px; color:var(--muted); }
+.pill { display:inline-block; font-size:12px; font-weight:500; padding:2px 10px; border-radius:99px; background:var(--bg); border:1px solid var(--line); color:var(--muted); }
+.pill.due { background:var(--glow-soft); border-color:var(--glow); color:var(--ink); }
+button, select, input, textarea { font:inherit; color:inherit; }
+button { cursor:pointer; }
+.btn { border:1px solid var(--accent); background:var(--accent); color:var(--accent-ink); border-radius:10px; padding:9px 16px; font-weight:600; min-height:42px; }
+.btn.ghost { background:transparent; color:var(--accent); }
+.btn.quiet { background:transparent; border-color:var(--line); color:var(--ink); font-weight:500; }
+.btn.small { font-size:14px; padding:6px 12px; min-height:36px; color:inherit; }
+.btn.small.primary { background:var(--accent); color:var(--accent-ink); }
+.btn.small.on { background:var(--glow); border-color:var(--glow); color:var(--on-glow); font-weight:600; }
+.btn.danger { color:var(--danger); border-color:var(--line); background:transparent; }
+:where(button, a, input, select, textarea):focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+input[type=text], input[type=time], select, textarea { width:100%; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px; min-height:44px; }
+textarea { resize:vertical; font-family:var(--serif); font-size:18px; line-height:1.5; }
+label.field { display:block; font-size:13px; color:var(--muted); margin:12px 0 4px; }
+.form-row { display:flex; gap:8px; margin-top:8px; }
+.form-row > input { flex:1; }
+.form-row > select { width:auto; max-width:44%; }
+.chips { display:flex; gap:8px; margin:18px 0 12px; }
+.chip { border:1px solid var(--line); background:transparent; border-radius:99px; padding:6px 14px; font-weight:500; color:var(--muted); }
+.chip[aria-pressed="true"] { background:var(--ink); color:var(--bg); border-color:var(--ink); }
+.req-text { font-size:17px; }
+.req-meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:6px; }
+.actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.answered-note { background:var(--glow-soft); border-radius:10px; padding:8px 12px; margin-top:10px; font-size:15px; }
+.entry-date { font-family:var(--serif); font-size:19px; }
+.entry-body { font-family:var(--serif); font-size:18px; line-height:1.55; white-space:pre-wrap; margin-top:6px; overflow-wrap:anywhere; }
+.entry-thanks { margin-top:8px; font-size:15px; color:var(--muted); }
+.empty { color:var(--muted); padding:18px 4px; }
+.slot-edit { display:grid; grid-template-columns:1fr 118px; gap:8px; }
+.slot-tools { display:flex; align-items:center; justify-content:space-between; margin-top:10px; }
+.switch { display:flex; align-items:center; gap:8px; font-size:15px; }
+.switch input { width:20px; height:20px; accent-color:var(--accent); }
+.toast { background:var(--ink); color:var(--bg); border-radius:10px; padding:10px 14px; margin-bottom:14px; font-size:15px; }
+nav { position:fixed; left:0; right:0; bottom:0; background:var(--surface); border-top:1px solid var(--line); display:grid; grid-template-columns:repeat(4,1fr); padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px)); z-index:10; }
+nav button { background:none; border:0; padding:10px 4px 8px; font-weight:500; color:var(--muted); position:relative; min-height:48px; }
+nav button[aria-current="page"] { color:var(--accent); font-weight:600; }
+nav button[aria-current="page"]::before { content:""; position:absolute; top:0; left:30%; right:30%; height:3px; border-radius:0 0 3px 3px; background:var(--glow); }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav aria-label="Sections">
+  <button data-act="tab" data-id="today">Today</button>
+  <button data-act="tab" data-id="requests">Requests</button>
+  <button data-act="tab" data-id="journal">Journal</button>
+  <button data-act="tab" data-id="reminders">Reminders</button>
+</nav>
+
+<script>
+(function () {
+  var KEY = 'prayerbook:v1';
+  var CATS = ['Family', 'Friends', 'Community', 'Health', 'Work', 'Myself', 'World'];
+  function defaults() {
+    return {
+      slots: [
+        { id: 's1', label: 'Morning prayer', time: '06:30', on: true },
+        { id: 's2', label: 'Midday prayer', time: '12:30', on: true },
+        { id: 's3', label: 'Evening prayer', time: '18:30', on: true },
+        { id: 's4', label: 'Night prayer', time: '21:30', on: true }
+      ],
+      done: {}, requests: [], journal: []
+    };
+  }
+  var memStore = null;
+  function load() {
+    var raw = null;
+    try { raw = localStorage.getItem(KEY); } catch (e) {}
+    if (!raw && memStore) raw = memStore;
+    if (!raw) return defaults();
+    try {
+      var d = JSON.parse(raw), base = defaults();
+      return {
+        slots: Array.isArray(d.slots) ? d.slots : base.slots,
+        done: d.done && typeof d.done === 'object' ? d.done : {},
+        requests: Array.isArray(d.requests) ? d.requests : [],
+        journal: Array.isArray(d.journal) ? d.journal : []
+      };
+    } catch (e) { return defaults(); }
+  }
+  function save() {
+    var s = JSON.stringify(S);
+    memStore = s;
+    try { localStorage.setItem(KEY, s); } catch (e) {}
+  }
+
+  var S = load();
+  var tab = 'today';
+  var ui = { filter: 'open', answering: null, confirm: null, flash: '' };
+
+  function uid() { return Math.random().toString(36).slice(2, 9) + Date.now().toString(36); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function dkey(d) { d = d || new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function toMin(t) { var p = String(t || '0:0').split(':'); return (+p[0] || 0) * 60 + (+p[1] || 0); }
+  function fmt(t) { var m = toMin(t), h = Math.floor(m / 60), mm = m % 60; return (h % 12 || 12) + ':' + pad(mm) + ' ' + (h >= 12 ? 'PM' : 'AM'); }
+  function niceDay(key) { return new Date(key + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); }
+  function byTime(a, b) { return toMin(a.time) - toMin(b.time); }
+  function isDone(id, day) { var d = S.done[day || dkey()]; return !!(d && d[id]); }
+  function anyDone(day) { var d = S.done[day]; return !!(d && Object.keys(d).length); }
+  function streak() {
+    var d = new Date(), n = 0;
+    if (!anyDone(dkey(d))) d.setDate(d.getDate() - 1);
+    while (anyDone(dkey(d))) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+  function prayedToday(r) { return (r.prayed || []).indexOf(dkey()) !== -1; }
+  function lastPrayed(r) { var p = r.prayed || []; return p.length ? p[p.length - 1] : ''; }
+
+  function arcPts(n) {
+    var P0 = [24, 108], P1 = [160, -40], P2 = [296, 108];
+    var out = [];
+    for (var i = 0; i < n; i++) {
+      var t = (i + 0.5) / n, u = 1 - t;
+      out.push([u * u * P0[0] + 2 * u * t * P1[0] + t * t * P2[0], u * u * P0[1] + 2 * u * t * P1[1] + t * t * P2[1]]);
+    }
+    return out;
+  }
+
+  /* ---------- views ---------- */
+  function viewToday() {
+    var now = new Date(), mins = now.getHours() * 60 + now.getMinutes();
+    var slots = S.slots.slice().sort(byTime);
+    var overdue = slots.filter(function (s) { return s.on && toMin(s.time) <= mins && !isDone(s.id); });
+    var next = slots.filter(function (s) { return s.on && toMin(s.time) > mins && !isDone(s.id); })[0];
+    var enabled = slots.filter(function (s) { return s.on; });
+    var status = '';
+    if (!overdue.length) {
+      if (next) status = 'Next: ' + esc(next.label) + ' at ' + fmt(next.time);
+      else if (enabled.length) status = 'All of today\u2019s prayers are done.';
+    }
+    var h = '<header><h1>' + esc(now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })) + '</h1>';
+    h += '<p class="sub">' + status + '</p></header>';
+    if (overdue.length) {
+      h += '<div class="banner" role="status"><p>' + esc(overdue[0].label) + ' was set for ' + fmt(overdue[0].time) + '.</p>' +
+        '<button class="btn small primary" data-act="slot" data-id="' + overdue[0].id + '">Mark prayed</button></div>';
+    }
+    if (slots.length) {
+      var pts = arcPts(slots.length);
+      var svg = '<svg class="arc" viewBox="0 0 320 140" role="group" aria-label="Today\u2019s prayer times">' +
+        '<path d="M24 108 Q160 -40 296 108" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="2 7" stroke-linecap="round"/>';
+      slots.forEach(function (s, i) {
+        var x = pts[i][0].toFixed(1), y = pts[i][1].toFixed(1), d = isDone(s.id);
+        var over = overdue.indexOf(s) !== -1;
+        svg += '<g class="node' + (d ? ' done' : '') + (over ? ' over' : '') + (s.on ? '' : ' off') + '" data-act="slot" data-id="' + s.id + '" role="button" tabindex="0" aria-pressed="' + d + '" aria-label="' + esc(s.label) + ' at ' + fmt(s.time) + '">' +
+          '<circle class="ring" cx="' + x + '" cy="' + y + '" r="17"/>' +
+          (d ? '<path class="check" transform="translate(' + x + ' ' + y + ')" d="M-6 0 L-2 5 L7 -5"/>' : '<circle class="dot" cx="' + x + '" cy="' + y + '" r="3.5"/>') +
+          '<text x="' + x + '" y="' + (+y + 35) + '">' + fmt(s.time) + '</text></g>';
+      });
+      svg += '</svg>';
+      h += '<div class="card" style="margin-top:18px">' + svg;
+      var st = streak();
+      h += '<div class="streak"><b>' + st + '</b><span class="small">' + (st === 1 ? 'day in a row' : 'days in a row') + (st === 0 ? ' \u2013 tap a time above when you\u2019ve prayed' : '') + '</span></div></div>';
+      h += '<ul class="rows" style="margin-top:14px">';
+      slots.forEach(function (s) {
+        var d = isDone(s.id), over = overdue.indexOf(s) !== -1;
+        h += '<li class="card row"><div class="grow"><p class="slot-label">' + esc(s.label) + '</p><p class="small">' + fmt(s.time) + (s.on ? '' : ' (reminder off)') + '</p></div>' +
+          (over ? '<span class="pill due">Due</span>' : '') +
+          '<button class="btn small ' + (d ? 'on' : 'quiet') + '" data-act="slot" data-id="' + s.id + '" aria-pressed="' + d + '">' + (d ? 'Prayed' : 'Mark prayed') + '</button></li>';
+      });
+      h += '</ul>';
+    } else {
+      h += '<p class="empty">No prayer times yet. Add some under Reminders.</p>';
+    }
+
+    var open = S.requests.filter(function (r) { return !r.answered; });
+    open.sort(function (a, b) {
+      var pa = prayedToday(a) ? 1 : 0, pb = prayedToday(b) ? 1 : 0;
+      if (pa !== pb) return pa - pb;
+      return lastPrayed(a) < lastPrayed(b) ? -1 : lastPrayed(a) > lastPrayed(b) ? 1 : 0;
+    });
+    h += '<section class="section"><h2>Pray through</h2>';
+    if (!open.length) {
+      h += '<p class="empty">Add prayer requests and they\u2019ll show up here to pray through.</p>';
+    } else {
+      h += '<ul class="rows">';
+      open.slice(0, 6).forEach(function (r) {
+        var p = prayedToday(r);
+        h += '<li class="card row"><div class="grow"><p class="req-text">' + esc(r.text) + '</p><div class="req-meta"><span class="pill">' + esc(r.cat) + '</span></div></div>' +
+          '<button class="btn small ' + (p ? 'on' : 'quiet') + '" data-act="pray" data-id="' + r.id + '" aria-pressed="' + p + '">' + (p ? 'Prayed' : 'Prayed today') + '</button></li>';
+      });
+      h += '</ul>';
+      if (open.length > 6) h += '<p class="small" style="margin-top:10px">' + (open.length - 6) + ' more in Requests.</p>';
+    }
+    h += '</section>';
+    return h;
+  }
+
+  function viewRequests() {
+    var open = S.requests.filter(function (r) { return !r.answered; });
+    var ans = S.requests.filter(function (r) { return !!r.answered; });
+    var h = '<header><h1>Requests</h1><p class="sub">People and things you\u2019re praying for.</p></header>';
+    h += '<div class="card" style="margin-top:18px"><label class="field" for="reqText" style="margin-top:0">New request</label>' +
+      '<input type="text" id="reqText" maxlength="300" placeholder="Who or what are you praying for?">' +
+      '<div class="form-row"><select id="reqCat" aria-label="Category">' + CATS.map(function (c) { return '<option>' + c + '</option>'; }).join('') + '</select>' +
+      '<button class="btn" data-act="addreq" style="flex:1">Add request</button></div></div>';
+    h += '<div class="chips" role="group" aria-label="Filter">' +
+      '<button class="chip" data-act="filter" data-id="open" aria-pressed="' + (ui.filter === 'open') + '">Open (' + open.length + ')</button>' +
+      '<button class="chip" data-act="filter" data-id="answered" aria-pressed="' + (ui.filter === 'answered') + '">Answered (' + ans.length + ')</button></div>';
+    var list = ui.filter === 'open' ? open.slice().reverse() : ans.slice().sort(function (a, b) { return a.answered.date < b.answered.date ? 1 : -1; });
+    if (!list.length) {
+      h += '<p class="empty">' + (ui.filter === 'open' ? 'No open requests. Add one above.' : 'Answered prayers will be kept here.') + '</p>';
+    } else {
+      h += '<ul class="rows">';
+      list.forEach(function (r) {
+        var n = (r.prayed || []).length, p = prayedToday(r);
+        h += '<li class="card"><p class="req-text">' + esc(r.text) + '</p>' +
+          '<div class="req-meta"><span class="pill">' + esc(r.cat) + '</span><span class="small">Added ' + niceDay(r.created) + '</span><span class="small">Prayed ' + n + (n === 1 ? ' time' : ' times') + '</span></div>';
+        if (r.answered) {
+          h += '<div class="answered-note"><b>Answered ' + niceDay(r.answered.date) + '.</b>' + (r.answered.note ? ' ' + esc(r.answered.note) : '') + '</div>' +
+            '<div class="actions"><button class="btn small quiet" data-act="reopen" data-id="' + r.id + '">Reopen</button>' + delBtn('delreq', r.id) + '</div>';
+        } else if (ui.answering === r.id) {
+          h += '<label class="field" for="ansNote">How was it answered? (optional)</label><input type="text" id="ansNote" maxlength="300">' +
+            '<div class="actions"><button class="btn small primary" data-act="saveanswer" data-id="' + r.id + '">Save answer</button><button class="btn small quiet" data-act="cancelanswer">Cancel</button></div>';
+        } else {
+          h += '<div class="actions"><button class="btn small ' + (p ? 'on' : 'quiet') + '" data-act="pray" data-id="' + r.id + '" aria-pressed="' + p + '">' + (p ? 'Prayed today' : 'Prayed today') + '</button>' +
+            '<button class="btn small quiet" data-act="answer" data-id="' + r.id + '">Mark answered</button>' + delBtn('delreq', r.id) + '</div>';
+        }
+        h += '</li>';
+      });
+      h += '</ul>';
+    }
+    return h;
+  }
+
+  function delBtn(act, id) {
+    var armed = ui.confirm === act + id;
+    return '<button class="btn small danger" data-act="' + act + '" data-id="' + id + '">' + (armed ? 'Tap again to delete' : 'Delete') + '</button>';
+  }
+
+  function viewJournal() {
+    var h = '<header><h1>Journal</h1><p class="sub">Write what\u2019s on your heart.</p></header>';
+    h += '<div class="card" style="margin-top:18px"><label class="field" for="jText" style="margin-top:0">Today\u2019s entry</label>' +
+      '<textarea id="jText" rows="6" placeholder="What are you bringing to God today?"></textarea>' +
+      '<label class="field" for="jThanks">Something I\u2019m thankful for (optional)</label><input type="text" id="jThanks" maxlength="200">' +
+      '<div class="actions"><button class="btn" data-act="addentry">Save entry</button></div></div>';
+    h += '<section class="section">';
+    var es = S.journal.slice().reverse();
+    if (!es.length) h += '<p class="empty">Your entries will appear here.</p>';
+    else {
+      h += '<ul class="rows">';
+      es.forEach(function (e) {
+        var d = new Date(e.date);
+        h += '<li class="card"><p class="entry-date">' + esc(d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })) + '</p>' +
+          '<p class="small">' + esc(d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })) + '</p>' +
+          '<p class="entry-body">' + esc(e.text) + '</p>' +
+          (e.thanks ? '<p class="entry-thanks">Thankful for: ' + esc(e.thanks) + '</p>' : '') +
+          '<div class="actions">' + delBtn('delentry', e.id) + '</div></li>';
+      });
+      h += '</ul>';
+    }
+    h += '</section>';
+    return h;
+  }
+
+  function viewReminders() {
+    var slots = S.slots.slice().sort(byTime);
+    var h = '<header><h1>Reminders</h1><p class="sub">Set the times you want to pray each day. They show on the Today screen while this page is open. For alarms that ring on your phone, ask Claude in chat to set them.</p></header>';
+    h += '<ul class="rows" style="margin-top:18px">';
+    slots.forEach(function (s) {
+      h += '<li class="card"><div class="slot-edit">' +
+        '<div><label class="field" style="margin-top:0" for="l' + s.id + '">Name</label><input type="text" id="l' + s.id + '" data-slot="' + s.id + '" data-field="label" maxlength="40" value="' + esc(s.label) + '"></div>' +
+        '<div><label class="field" style="margin-top:0" for="t' + s.id + '">Time</label><input type="time" id="t' + s.id + '" data-slot="' + s.id + '" data-field="time" value="' + esc(s.time) + '"></div></div>' +
+        '<div class="slot-tools"><label class="switch"><input type="checkbox" data-slot="' + s.id + '" data-field="on"' + (s.on ? ' checked' : '') + '> Remind me</label>' + delBtn('delslot', s.id) + '</div></li>';
+    });
+    h += '</ul><div class="actions"><button class="btn ghost" data-act="addslot">Add a prayer time</button></div>';
+    h += '<section class="section"><h2>Backup</h2><p class="sub" style="margin-top:0">Everything is stored on this device only. Save a copy so you can restore it later.</p>' +
+      '<div class="actions"><button class="btn quiet" data-act="export">Save a backup file</button></div>' +
+      '<label class="field" for="restoreText">Restore from a backup (paste its contents)</label><textarea id="restoreText" rows="3" style="font-family:var(--sans);font-size:14px"></textarea>' +
+      '<div class="actions"><button class="btn quiet" data-act="restore">Restore</button></div></section>';
+    return h;
+  }
+
+  /* ---------- render ---------- */
+  function render() {
+    var v = tab === 'today' ? viewToday() : tab === 'requests' ? viewRequests() : tab === 'journal' ? viewJournal() : viewReminders();
+    var app = document.getElementById('app');
+    app.innerHTML = (ui.flash ? '<div class="toast" role="status">' + esc(ui.flash) + '</div>' : '') + v;
+    var btns = document.querySelectorAll('nav button');
+    for (var i = 0; i < btns.length; i++) {
+      if (btns[i].dataset.id === tab) btns[i].setAttribute('aria-current', 'page'); else btns[i].removeAttribute('aria-current');
+    }
+  }
+  function flash(msg) { ui.flash = msg; render(); }
+  function val(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+  /* ---------- actions ---------- */
+  function act(a, id) {
+    var t = dkey(), r, i;
+    if (a !== 'delreq' && a !== 'delentry' && a !== 'delslot') ui.confirm = null;
+    switch (a) {
+      case 'tab': tab = id; ui.answering = null; ui.confirm = null; ui.flash = ''; render(); window.scrollTo(0, 0); return;
+      case 'slot':
+        S.done[t] = S.done[t] || {};
+        if (S.done[t][id]) delete S.done[t][id]; else S.done[t][id] = true;
+        if (!Object.keys(S.done[t]).length) delete S.done[t];
+        save(); render(); return;
+      case 'pray':
+        r = S.requests.filter(function (x) { return x.id === id; })[0]; if (!r) return;
+        r.prayed = r.prayed || [];
+        i = r.prayed.indexOf(t);
+        if (i === -1) { r.prayed.push(t); r.prayed.sort(); } else r.prayed.splice(i, 1);
+        save(); render(); return;
+      case 'addreq':
+        var text = val('reqText');
+        if (!text) { flash('Write a request first.'); return; }
+        S.requests.push({ id: uid(), text: text, cat: val('reqCat') || 'Other', created: t, prayed: [], answered: null });
+        ui.filter = 'open'; ui.flash = ''; save(); render(); return;
+      case 'filter': ui.filter = id; render(); return;
+      case 'answer': ui.answering = id; render(); var n = document.getElementById('ansNote'); if (n) n.focus(); return;
+      case 'cancelanswer': ui.answering = null; render(); return;
+      case 'saveanswer':
+        r = S.requests.filter(function (x) { return x.id === id; })[0]; if (!r) return;
+        r.answered = { date: t, note: val('ansNote') };
+        ui.answering = null; save(); render(); return;
+      case 'reopen':
+        r = S.requests.filter(function (x) { return x.id === id; })[0]; if (r) r.answered = null;
+        save(); render(); return;
+      case 'delreq': case 'delentry': case 'delslot':
+        if (ui.confirm !== a + id) { ui.confirm = a + id; render(); return; }
+        ui.confirm = null;
+        if (a === 'delreq') S.requests = S.requests.filter(function (x) { return x.id !== id; });
+        if (a === 'delentry') S.journal = S.journal.filter(function (x) { return x.id !== id; });
+        if (a === 'delslot') S.slots = S.slots.filter(function (x) { return x.id !== id; });
+        save(); render(); return;
+      case 'addentry':
+        var body = val('jText');
+        if (!body) { flash('Write something first.'); return; }
+        S.journal.push({ id: uid(), date: new Date().toISOString(), text: body, thanks: val('jThanks') });
+        ui.flash = 'Entry saved.'; save(); render(); return;
+      case 'addslot':
+        S.slots.push({ id: uid(), label: 'Prayer', time: '12:00', on: true });
+        save(); render(); return;
+      case 'export': doExport(); return;
+      case 'restore': doRestore(); return;
+    }
+  }
+
+  function doExport() {
+    var data = JSON.stringify(S, null, 2);
+    if (!window.claude || !window.claude.use) { flash('Saving files isn\u2019t available here.'); return; }
+    window.claude.use('downloads').then(function (dl) {
+      if (!dl) { flash('Saving files isn\u2019t available here.'); return; }
+      return dl.save({ filename: 'prayer-book-backup-' + dkey() + '.json', data: data }).then(function () {
+        flash('Backup saved.');
+      }, function (err) {
+        if (err && err.code === 'declined') return;
+        flash('Couldn\u2019t save the backup.');
+      });
+    }, function () { flash('Saving files isn\u2019t available here.'); });
+  }
+
+  function doRestore() {
+    var raw = val('restoreText');
+    if (!raw) { flash('Paste your backup first.'); return; }
+    try {
+      var d = JSON.parse(raw);
+      if (!d || !Array.isArray(d.slots) || !Array.isArray(d.requests) || !Array.isArray(d.journal) || typeof d.done !== 'object') throw new Error('shape');
+      S = { slots: d.slots, done: d.done || {}, requests: d.requests, journal: d.journal };
+      save(); flash('Backup restored.');
+    } catch (e) { flash('That doesn\u2019t look like a Prayer Book backup.'); }
+  }
+
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest ? e.target.closest('[data-act]') : null;
+    if (el) act(el.getAttribute('data-act'), el.getAttribute('data-id'));
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var el = e.target;
+    if (el && el.getAttribute && el.getAttribute('role') === 'button' && el.getAttribute('data-act')) {
+      e.preventDefault(); act(el.getAttribute('data-act'), el.getAttribute('data-id'));
+    }
+  });
+  document.addEventListener('change', function (e) {
+    var el = e.target, id = el.getAttribute && el.getAttribute('data-slot');
+    if (!id) return;
+    var s = S.slots.filter(function (x) { return x.id === id; })[0]; if (!s) return;
+    var f = el.getAttribute('data-field');
+    if (f === 'on') s[f] = el.checked;
+    else if (f === 'time') { if (!el.value) return; s[f] = el.value; }
+    else s[f] = el.value.trim() || 'Prayer';
+    save();
+    if (f !== 'label') render();
+  });
+
+  setInterval(function () { if (tab === 'today' && !document.hidden) render(); }, 30000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && tab === 'today') render(); });
+  render();
+})();
+</script>
+</body>
+</html>
