@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prayer Book</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#EEF2EF; --surface:#FFFFFF; --ink:#1B2A26; --muted:#4D5F58; --line:#D2DCD6;
+  --accent:#2F6B57; --accent-ink:#FFFFFF; --glow:#7FB395; --glow-soft:#DDEBE2; --on-glow:#12281E; --danger:#A33A3A;
+  --serif:'Newsreader', Georgia, 'Times New Roman', serif;
+  --sans:'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#0E1714; --surface:#16231F; --ink:#E4EEE9; --muted:#93A99F; --line:#253730;
+    --accent:#7FC4A3; --accent-ink:#0E1714; --glow:#6FB08F; --glow-soft:#1E3329; --on-glow:#0B1A14; --danger:#E08A8A;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#0E1714; --surface:#16231F; --ink:#E4EEE9; --muted:#93A99F; --line:#253730;
+  --accent:#7FC4A3; --accent-ink:#0E1714; --glow:#6FB08F; --glow-soft:#1E3329; --on-glow:#0B1A14; --danger:#E08A8A;
+}
+html { scroll-padding-top:env(safe-area-inset-top,0px); }
+*, *::before, *::after { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:16px; line-height:1.5; -webkit-text-size-adjust:100%; }
+main { max-width:560px; margin:0 auto; padding:20px 18px 110px; }
+h1, h2 { font-family:var(--serif); font-weight:500; margin:0; letter-spacing:-0.01em; }
+h1 { font-size:34px; line-height:1.1; }
+h2 { font-size:22px; line-height:1.2; margin-bottom:10px; }
+p { margin:0; }
+.sub { color:var(--muted); margin-top:6px; }
+.section { margin-top:28px; }
+.card { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
+.banner { background:var(--glow-soft); border:1px solid var(--glow); border-radius:14px; padding:12px 14px; margin-bottom:18px; display:flex; gap:12px; align-items:center; justify-content:space-between; }
+.banner p { font-weight:500; }
+.arc { display:block; width:100%; height:auto; margin-top:14px; overflow:visible; }
+.arc .node { cursor:pointer; outline:none; }
+.arc .node circle.ring { fill:var(--surface); stroke:var(--accent); stroke-width:2; }
+.arc .node.over circle.ring { stroke:var(--glow); stroke-width:3; }
+.arc .node.done circle.ring { fill:var(--glow); stroke:var(--glow); }
+.arc .node.off { opacity:.45; }
+.arc .node:focus-visible circle.ring { stroke:var(--ink); stroke-width:3; }
+.arc .dot { fill:var(--accent); }
+.arc .check { fill:none; stroke:var(--on-glow); stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
+.arc text { font-family:var(--sans); font-size:11px; fill:var(--muted); text-anchor:middle; }
+.passage { margin-top:12px; padding:12px 14px; background:var(--bg); border-radius:10px; border-left:3px solid var(--glow); }
+.passage-ref { font-weight:600; font-size:14px; margin:0; }
+.passage-text { font-family:var(--serif); font-size:19px; line-height:1.55; margin:6px 0 8px; overflow-wrap:anywhere; }
+.passage-text.small { font-family:var(--sans); font-size:14px; }
+.passage-text sup { font-family:var(--sans); font-size:11px; color:var(--muted); margin-right:3px; }
+.passage-foot { font-size:12.5px; color:var(--muted); margin:0; }
+.passage-foot a { color:var(--accent); }
+.verse .passage { margin-top:10px; }
+.verse { margin-top:18px; }
+.dev-body { margin-top:14px; border-top:1px solid var(--line); padding-top:6px; }
+.dev-body .small { margin:12px 0 4px; }
+.dev-text { font-family:var(--serif); font-size:18px; line-height:1.6; margin:0; }
+.dev-prayer { font-family:var(--serif); font-style:italic; font-size:17px; line-height:1.55; margin:0; }
+.dev-quote { background:var(--bg); border-radius:10px; padding:10px 14px 12px; margin-top:16px; }
+.dev-quote .small { margin:8px 0 0; }
+.dev-quote .small:first-child { margin-top:0; }
+.dev-qtext { font-family:var(--serif); font-size:17px; line-height:1.45; margin:6px 0 6px; }
+/* morning / evening tabs */
+.parttabs { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+.parttab { border:1px solid var(--line); background:transparent; border-radius:10px; padding:9px 8px; font-weight:500; color:var(--ink); min-height:42px; }
+.parttab.on { background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:600; }
+.dev-body a { color:var(--accent); }
+/* today row */
+.dayrow { margin-top:16px; padding:14px 10px 12px; }
+.slotrow { display:grid; grid-template-columns:repeat(auto-fit,minmax(64px,1fr)); gap:6px; }
+.slotbtn { background:none; border:0; padding:4px 2px; display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--ink); border-radius:10px; min-width:0; }
+.slotcircle { width:42px; height:42px; border-radius:50%; border:1.5px solid var(--line); display:flex; align-items:center; justify-content:center; background:var(--surface); }
+.slotbtn.over .slotcircle { border-color:var(--accent); border-width:2.5px; }
+.slotbtn.done .slotcircle { background:var(--glow); border-color:var(--glow); }
+.slotbtn.off { opacity:.5; }
+.slotcircle svg { width:22px; height:22px; fill:none; stroke:var(--on-glow); stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
+.slotname { font-size:13px; font-weight:500; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.slottime { font-size:12px; color:var(--muted); }
+.streakline { text-align:center; margin-top:10px; }
+.list { padding:4px 14px; }
+.lrow { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0; border-top:1px solid var(--line); }
+.lrow:first-child { border-top:0; }
+.lr-text { flex:1; min-width:0; overflow-wrap:anywhere; }
+/* week */
+.weekrow { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center; }
+.weekday { display:flex; flex-direction:column; align-items:center; gap:4px; font-size:12px; color:var(--muted); }
+.wcircle { width:34px; height:34px; border-radius:50%; border:1.5px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--ink); }
+.wcircle.on { background:var(--glow); border-color:var(--glow); color:var(--on-glow); font-weight:600; }
+.wcircle.today { border-color:var(--accent); }
+.wcircle.future { opacity:.4; }
+.stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+.stat { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
+.stat b { display:block; font-family:var(--serif); font-size:26px; font-weight:500; line-height:1.2; }
+.stat span { font-size:13px; color:var(--muted); }
+/* focus mode */
+body.focus nav { display:none; }
+body.focus main { padding-bottom:40px; }
+body.focus header h1 { font-size:26px; }
+body.focus .step-card { padding:20px 18px; }
+body.focus .step-card h2 { font-size:30px; }
+body.focus .lordline { font-size:27px; }
+body.focus .step-card p:not(.small), body.focus .prompts { font-size:18px; line-height:1.6; }
+body.focus .step-card textarea { font-size:19px; }
+body.focus .step-card .btn { min-height:50px; font-size:17px; }
+body.focus .passage-text { font-size:21px; }
+input[type=file] { width:100%; font-size:14px; margin-top:2px; }
+.dots { display:flex; gap:6px; margin:14px 0 4px; }
+.dots span { flex:1; height:5px; border-radius:3px; background:var(--line); }
+.dots span.on { background:var(--glow); }
+.lordline { margin:8px 0 4px; font-family:var(--serif); font-size:23px; line-height:1.4; }
+.prompts { margin:12px 0 0; padding-left:20px; }
+.prompts li { margin:6px 0; }
+.reflinks { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:14px; }
+a.reflink { border:1px solid var(--line); border-radius:99px; padding:6px 12px; font-size:14px; font-weight:500; color:var(--accent); text-decoration:none; }
+.need { margin-top:16px; }
+.need h3 { font-size:15px; font-weight:600; margin:0 0 8px; }
+.chiprow { display:flex; gap:8px; flex-wrap:wrap; }
+.chiprow .chip { color:var(--ink); }
+.step-card { margin-top:16px; }
+.step-card textarea { margin-top:14px; font-size:17px; }
+.quote { margin-top:24px; }
+.quote blockquote { margin:10px 0 8px; font-family:var(--serif); font-size:22px; line-height:1.4; }
+.quote-by { font-weight:600; }
+.quote .row { align-items:flex-start; }
+.verse-ref { font-family:var(--serif); font-size:28px; line-height:1.2; margin:2px 0; }
+a.btn { display:inline-flex; align-items:center; text-decoration:none; }
+.streak { display:flex; align-items:baseline; gap:8px; margin-top:6px; }
+.streak b { font-family:var(--serif); font-size:28px; font-weight:500; color:var(--glow); }
+.rows { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+.row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.row .grow { flex:1; min-width:0; }
+.slot-label { font-weight:500; }
+.small { font-size:13px; color:var(--muted); }
+.pill { display:inline-block; font-size:12px; font-weight:500; padding:2px 10px; border-radius:99px; background:var(--bg); border:1px solid var(--line); color:var(--muted); }
+.pill.due { background:var(--glow-soft); border-color:var(--glow); color:var(--ink); }
+button, select, input, textarea { font:inherit; color:inherit; }
+button { cursor:pointer; }
+.btn { border:1px solid var(--accent); background:var(--accent); color:var(--accent-ink); border-radius:10px; padding:9px 16px; font-weight:600; min-height:42px; }
+.btn.ghost { background:transparent; color:var(--accent); }
+.btn.quiet { background:transparent; border-color:var(--line); color:var(--ink); font-weight:500; }
+.btn.small { font-size:14px; padding:6px 12px; min-height:36px; color:inherit; }
+.btn.small.primary { background:var(--accent); color:var(--accent-ink); }
+.btn.small.on { background:var(--glow); border-color:var(--glow); color:var(--on-glow); font-weight:600; }
+.btn.danger { color:var(--danger); border-color:var(--line); background:transparent; }
+:where(button, a, input, select, textarea):focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+input[type=text], input[type=time], select, textarea { width:100%; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px; min-height:44px; }
+textarea { resize:vertical; font-family:var(--serif); font-size:18px; line-height:1.5; }
+label.field { display:block; font-size:13px; color:var(--muted); margin:12px 0 4px; }
+.form-row { display:flex; gap:8px; margin-top:8px; }
+.form-row > input { flex:1; }
+.form-row > select { width:auto; max-width:44%; }
+.chips { display:flex; gap:8px; margin:18px 0 12px; }
+.chip { border:1px solid var(--line); background:transparent; border-radius:99px; padding:6px 14px; font-weight:500; color:var(--muted); }
+.chip[aria-pressed="true"] { background:var(--ink); color:var(--bg); border-color:var(--ink); }
+.req-text { font-size:17px; }
+.req-meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:6px; }
+.actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.answered-note { background:var(--glow-soft); border-radius:10px; padding:8px 12px; margin-top:10px; font-size:15px; }
+.entry-date { font-family:var(--serif); font-size:19px; }
+.entry-body { font-family:var(--serif); font-size:18px; line-height:1.55; white-space:pre-wrap; margin-top:6px; overflow-wrap:anywhere; }
+.entry-thanks { margin-top:8px; font-size:15px; color:var(--muted); }
+.empty { color:var(--muted); padding:18px 4px; }
+.slot-edit { display:grid; grid-template-columns:1fr 118px; gap:8px; }
+.slot-tools { display:flex; align-items:center; justify-content:space-between; margin-top:10px; }
+.switch { display:flex; align-items:center; gap:8px; font-size:15px; }
+.switch input { width:20px; height:20px; accent-color:var(--accent); }
+.toast { background:var(--ink); color:var(--bg); border-radius:10px; padding:10px 14px; margin-bottom:14px; font-size:15px; }
+nav { position:fixed; left:0; right:0; bottom:0; background:var(--surface); border-top:1px solid var(--line); display:grid; grid-template-columns:repeat(6,1fr); padding:4px 2px calc(4px + env(safe-area-inset-bottom,0px)); z-index:10; }
+nav button { background:none; border:0; padding:8px 0 6px; font-size:11.5px; font-weight:500; color:var(--muted); position:relative; min-height:52px; display:flex; flex-direction:column; align-items:center; gap:3px; }
+nav button svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+nav button[aria-current="page"] { color:var(--accent); font-weight:600; }
+nav button[aria-current="page"]::before { content:""; position:absolute; top:0; left:30%; right:30%; height:3px; border-radius:0 0 3px 3px; background:var(--glow); }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav aria-label="Sections">
+  <button data-act="tab" data-id="today"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span>Today</span></button>
+  <button data-act="tab" data-id="pray"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg><span>Pray</span></button>
+  <button data-act="tab" data-id="requests"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg><span>Requests</span></button>
+  <button data-act="tab" data-id="journal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span>Journal</span></button>
+  <button data-act="tab" data-id="week"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Week</span></button>
+  <button data-act="tab" data-id="reminders"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>Times</span></button>
+</nav>
+
+<script>
+(function () {
+  var KEY = 'prayerbook:v1';
+  var CATS = ['Family', 'Friends', 'Community', 'Health', 'Work', 'Myself', 'World'];
+  var QUOTES = [
+    { text: "You have made us for yourself, O Lord, and our heart is restless until it rests in you.", by: "Augustine", src: "Confessions 1.1", era: "Early Church" },
+    { text: "Late have I loved you, O Beauty so ancient and so new.", by: "Augustine", src: "Confessions 10.27", era: "Early Church" },
+    { text: "Give what you command, and command what you will.", by: "Augustine", src: "Confessions 10.29", era: "Early Church" },
+    { text: "Love, and do what you will.", by: "Augustine", src: "Homilies on 1 John 7.8", era: "Early Church" },
+    { text: "God, who created you without you, will not save you without you.", by: "Augustine", src: "Sermon 169", era: "Early Church" },
+    { text: "Peace is the tranquility of order.", by: "Augustine", src: "City of God 19.13", era: "Early Church" },
+    { text: "For he was made man that we might be made God.", by: "Athanasius", src: "On the Incarnation 54", era: "Early Church" },
+    { text: "Do you want to honor the body of Christ? Do not overlook him when he is naked.", by: "John Chrysostom", src: "Homilies on Matthew 50", era: "Early Church" },
+    { text: "Not to share our wealth with the poor is to steal from them and take away their life.", by: "John Chrysostom", src: "On Lazarus", era: "Early Church" },
+    { text: "Christ is risen, and life reigns.", by: "John Chrysostom", src: "Paschal Homily", era: "Early Church" },
+    { text: "The bread you keep belongs to the hungry; the coat in your closet belongs to the one who has none.", by: "Basil the Great", src: "Homily on “I will tear down my barns”", era: "Early Church" },
+    { text: "What is not assumed is not healed.", by: "Gregory of Nazianzus", src: "Letter 101", era: "Early Church" },
+    { text: "Ignorance of Scripture is ignorance of Christ.", by: "Jerome", src: "Commentary on Isaiah, prologue", era: "Early Church" },
+    { text: "The glory of God is a living human being, and the life of a human being is the vision of God.", by: "Irenaeus", src: "Against Heresies 4.20.7", era: "Early Church" },
+    { text: "He became what we are, so that he might bring us to be what he is.", by: "Irenaeus", src: "Against Heresies 5, preface", era: "Early Church" },
+    { text: "It is better to be silent and be, than to speak and not to be.", by: "Ignatius of Antioch", src: "Letter to the Ephesians 15", era: "Early Church" },
+    { text: "You cannot have God as your Father if you do not have the Church as your mother.", by: "Cyprian of Carthage", src: "On the Unity of the Church 6", era: "Early Church" },
+    { text: "The blood of Christians is seed.", by: "Tertullian", src: "Apology 50", era: "Early Church" },
+    { text: "Recognize, O Christian, your dignity.", by: "Leo the Great", src: "Sermon 21 (Nativity)", era: "Early Church" },
+    { text: "O Lord and Master of my life, take from me the spirit of sloth, despair, lust of power, and idle talk.", by: "Ephrem the Syrian (attributed)", src: "Lenten Prayer", era: "Early Church" },
+    { text: "Go, sit in your cell, and your cell will teach you everything.", by: "Abba Moses", src: "Sayings of the Desert Fathers", era: "Desert" },
+    { text: "Be at peace with your own soul, and heaven and earth will be at peace with you.", by: "Isaac the Syrian", src: "Ascetical Homilies", era: "Early Church" },
+    { text: "Listen carefully, my child, and attend with the ear of your heart.", by: "Benedict of Nursia", src: "Rule, Prologue", era: "Medieval" },
+    { text: "Let nothing be preferred to the work of God.", by: "Benedict of Nursia", src: "Rule 43", era: "Medieval" },
+    { text: "Let all guests be received as Christ.", by: "Benedict of Nursia", src: "Rule 53", era: "Medieval" },
+    { text: "I do not seek to understand so that I may believe, but I believe so that I may understand.", by: "Anselm of Canterbury", src: "Proslogion 1", era: "Medieval" },
+    { text: "Teach me to seek you, and reveal yourself to me as I seek.", by: "Anselm of Canterbury", src: "Proslogion 1", era: "Medieval" },
+    { text: "The reason for loving God is God; the measure of love is to love without measure.", by: "Bernard of Clairvaux", src: "On Loving God 1", era: "Medieval" },
+    { text: "Grace does not destroy nature but perfects it.", by: "Thomas Aquinas", src: "Summa Theologiae I, q. 1, a. 8", era: "Medieval" },
+    { text: "All shall be well, and all shall be well, and all manner of thing shall be well.", by: "Julian of Norwich", src: "Revelations of Divine Love, ch. 27", era: "Medieval" },
+    { text: "He did not say, “You shall never be troubled,” but he said, “You shall not be overcome.”", by: "Julian of Norwich", src: "Revelations of Divine Love, ch. 68", era: "Medieval" },
+    { text: "Man proposes, but God disposes.", by: "Thomas à Kempis", src: "The Imitation of Christ 1.19", era: "Medieval" },
+    { text: "First keep peace within yourself, then you can also bring peace to others.", by: "Thomas à Kempis", src: "The Imitation of Christ 2.3", era: "Medieval" },
+    { text: "Let nothing disturb you, let nothing frighten you; all things pass, God does not change.", by: "Teresa of Ávila (attributed)", src: "Her breviary bookmark", era: "Early modern" },
+    { text: "In the evening of life, we will be judged on love alone.", by: "John of the Cross", src: "Sayings of Light and Love", era: "Early modern" },
+    { text: "We can do little things for God; I turn the cake that is frying on the pan for love of him.", by: "Brother Lawrence", src: "The Practice of the Presence of God", era: "Early modern" },
+    { text: "The heart has its reasons which reason does not know.", by: "Blaise Pascal", src: "Pensées", era: "Early modern" },
+    { text: "Faith is a living, daring confidence in God’s grace.", by: "Martin Luther", src: "Preface to Romans", era: "Reformation" },
+    { text: "Our wisdom consists almost entirely of two parts: the knowledge of God and of ourselves.", by: "John Calvin", src: "Institutes 1.1.1", era: "Reformation" },
+    { text: "Prayer, the Church’s banquet, angels’ age, God’s breath in man returning to his birth.", by: "George Herbert", src: "“Prayer (I),” The Temple", era: "Anglican" },
+    { text: "The Word without a word.", by: "Lancelot Andrewes", src: "Nativity Sermon, 1618", era: "Anglican" },
+    { text: "Almighty God, unto whom all hearts be open, all desires known, and from whom no secrets are hid.", by: "Book of Common Prayer", src: "Collect for Purity", era: "Anglican" },
+    { text: "Lighten our darkness, we beseech thee, O Lord.", by: "Book of Common Prayer", src: "Collect at Evening Prayer", era: "Anglican" },
+    { text: "Though we cannot think alike, may we not love alike?", by: "John Wesley", src: "Sermon: Catholic Spirit", era: "Anglican" },
+    { text: "Tradition is the democracy of the dead.", by: "G. K. Chesterton", src: "Orthodoxy, ch. 4", era: "Modern" },
+    { text: "Acquire the Spirit of peace, and thousands around you will be saved.", by: "Seraphim of Sarov (attributed)", src: "Traditional saying", era: "Modern" },
+    { text: "The proof of love is in the works.", by: "Gregory the Great", src: "Homilies on the Gospels 30", era: "Early Church" },
+    { text: "Faith is to believe what you do not see; the reward of this faith is to see what you believe.", by: "Augustine", src: "Sermon 43", era: "Early Church" },
+    { text: "If you comprehend it, it is not God.", by: "Augustine", src: "Sermon 52", era: "Early Church" },
+    { text: "Nothing can harm the one who does not harm himself.", by: "John Chrysostom", src: "That No One Can Harm the Man Who Does Not Harm Himself", era: "Early Church" },
+    { text: "For eighty-six years I have served him, and he has done me no wrong. How can I blaspheme my King who saved me?", by: "Polycarp of Smyrna", src: "Martyrdom of Polycarp 9", era: "Early Church" },
+    { text: "Christ be with me, Christ within me, Christ behind me, Christ before me.", by: "St. Patrick (attributed)", src: "St. Patrick’s Breastplate", era: "Early Church" },
+    { text: "Lord Jesus Christ, Son of God, have mercy on me, a sinner.", by: "Eastern Christian tradition", src: "The Jesus Prayer", era: "Early Church" },
+    { text: "I believe in God the Father Almighty, Maker of heaven and earth.", by: "The Apostles’ Creed", src: "Ancient baptismal creed", era: "Early Church" },
+    { text: "I have often repented of having spoken, but never of having been silent.", by: "Abba Arsenius", src: "Sayings of the Desert Fathers", era: "Desert" },
+    { text: "If you wish, you can become all flame.", by: "Abba Joseph", src: "Sayings of the Desert Fathers", era: "Desert" },
+    { text: "Love feels no burden, thinks nothing of trouble.", by: "Thomas à Kempis", src: "The Imitation of Christ 3.5", era: "Medieval" },
+    { text: "We should fear, love, and trust in God above all things.", by: "Martin Luther", src: "Small Catechism, First Commandment", era: "Reformation" },
+    { text: "The human heart is a perpetual factory of idols.", by: "John Calvin", src: "Institutes 1.11.8", era: "Reformation" },
+    { text: "That I am not my own, but belong, body and soul, in life and in death, to my faithful Savior Jesus Christ.", by: "Heidelberg Catechism", src: "Question 1", era: "Reformation" },
+    { text: "Man’s chief end is to glorify God, and to enjoy him for ever.", by: "Westminster Shorter Catechism", src: "Question 1", era: "Reformation" },
+    { text: "Take, Lord, and receive all my liberty, my memory, my understanding, and my entire will.", by: "Ignatius of Loyola", src: "Spiritual Exercises 234", era: "Early modern" },
+    { text: "In prayer it is better to have a heart without words than words without a heart.", by: "John Bunyan", src: "I Will Pray with the Spirit", era: "Early modern" },
+    { text: "I preached as never sure to preach again, and as a dying man to dying men.", by: "Richard Baxter", src: "Love Breathing Thanks and Praise", era: "Early modern" },
+    { text: "Resolved, to live with all my might, while I do live.", by: "Jonathan Edwards", src: "Resolutions", era: "Early modern" },
+    { text: "When I survey the wondrous cross, on which the Prince of glory died.", by: "Isaac Watts", src: "Hymn, 1707", era: "Early modern" },
+    { text: "Love bade me welcome, yet my soul drew back.", by: "George Herbert", src: "“Love (III),” The Temple", era: "Anglican" },
+    { text: "No man is an island, entire of itself.", by: "John Donne", src: "Devotions upon Emergent Occasions, Meditation 17", era: "Anglican" },
+    { text: "Almighty and everlasting God, who hatest nothing that thou hast made.", by: "Book of Common Prayer", src: "Collect for Ash Wednesday", era: "Anglican" },
+    { text: "O God, from whom all holy desires, all good counsels, and all just works do proceed.", by: "Book of Common Prayer", src: "Collect for Peace, Evening Prayer", era: "Anglican" },
+    { text: "We bless thee for our creation, preservation, and all the blessings of this life.", by: "Book of Common Prayer", src: "The General Thanksgiving", era: "Anglican" },
+    { text: "Praise God, from whom all blessings flow.", by: "Thomas Ken", src: "The Doxology, 1674", era: "Anglican" },
+    { text: "’Twas grace that taught my heart to fear, and grace my fears relieved.", by: "John Newton", src: "“Amazing Grace,” 1779", era: "Anglican" },
+    { text: "Love divine, all loves excelling, joy of heaven, to earth come down.", by: "Charles Wesley", src: "Hymn, 1747", era: "Anglican" },
+    { text: "All things bright and beautiful, all creatures great and small, all things wise and wonderful, the Lord God made them all.", by: "Cecil Frances Alexander", src: "Hymn, 1848", era: "Anglican" },
+    { text: "What can I give him, poor as I am?", by: "Christina Rossetti", src: "“In the Bleak Midwinter”", era: "Anglican" },
+    { text: "Lead, kindly Light, amid the encircling gloom, lead Thou me on.", by: "John Henry Newman", src: "“The Pillar of the Cloud,” 1833", era: "Modern" },
+    { text: "Here below to live is to change, and to be perfect is to have changed often.", by: "John Henry Newman", src: "An Essay on the Development of Christian Doctrine", era: "Modern" },
+    { text: "God has created me to do Him some definite service.", by: "John Henry Newman", src: "Meditations and Devotions", era: "Modern" },
+    { text: "The trivial round, the common task, will furnish all we ought to ask.", by: "John Keble", src: "“New Every Morning,” The Christian Year", era: "Modern" },
+    { text: "Holiness is the habit of being of one mind with God.", by: "J. C. Ryle", src: "Holiness", era: "Modern" },
+    { text: "The Church is looking for better methods; God is looking for better men.", by: "E. M. Bounds", src: "Power Through Prayer", era: "Modern" },
+    { text: "The first great and primary business to which I ought to attend every day was to have my soul happy in the Lord.", by: "George Müller", src: "Narrative of the Lord’s Dealings", era: "Modern" },
+    { text: "God’s work done in God’s way will never lack God’s supplies.", by: "Hudson Taylor (attributed)", src: "Traditional saying", era: "Modern" },
+    { text: "By perseverance the snail reached the ark.", by: "Charles Spurgeon (attributed)", src: "Traditional saying", era: "Modern" },
+    { text: "For me, prayer is a surge of the heart; it is a simple look turned toward heaven.", by: "Thérèse of Lisieux", src: "Story of a Soul", era: "Modern" },
+    { text: "Joy, which was the small publicity of the pagan, is the gigantic secret of the Christian.", by: "G. K. Chesterton", src: "Orthodoxy, ch. 9", era: "Modern" },
+    { text: "The Christian ideal has not been tried and found wanting. It has been found difficult; and left untried.", by: "G. K. Chesterton", src: "What’s Wrong with the World", era: "Modern" },
+    { text: "Love in action is a harsh and dreadful thing compared with love in dreams.", by: "Fyodor Dostoevsky", src: "The Brothers Karamazov", era: "Modern" }
+  ];
+  var VERSES = [
+    { ref: "Psalm 23:1-3", theme: "Provision" },
+    { ref: "Proverbs 3:5-6", theme: "Trust" },
+    { ref: "Philippians 4:6-7", theme: "Peace" },
+    { ref: "Isaiah 41:10", theme: "Courage" },
+    { ref: "Jeremiah 29:11", theme: "Hope" },
+    { ref: "Romans 8:28", theme: "Purpose" },
+    { ref: "Joshua 1:9", theme: "Courage" },
+    { ref: "Matthew 6:33", theme: "Priorities" },
+    { ref: "Psalm 46:1-3", theme: "Refuge" },
+    { ref: "Matthew 11:28-30", theme: "Rest" },
+    { ref: "John 3:16-17", theme: "Love" },
+    { ref: "Romans 12:12", theme: "Perseverance" },
+    { ref: "Psalm 121:1-2", theme: "Help" },
+    { ref: "Isaiah 40:28-31", theme: "Strength" },
+    { ref: "1 Peter 5:6-7", theme: "Worry" },
+    { ref: "Psalm 34:8", theme: "Goodness" },
+    { ref: "Galatians 5:22-23", theme: "Character" },
+    { ref: "Colossians 3:23-24", theme: "Work" },
+    { ref: "James 1:5", theme: "Wisdom" },
+    { ref: "Psalm 119:105", theme: "Guidance" },
+    { ref: "Hebrews 11:1", theme: "Faith" },
+    { ref: "2 Corinthians 12:9", theme: "Grace" },
+    { ref: "Psalm 27:1", theme: "Fear" },
+    { ref: "Lamentations 3:22-23", theme: "Faithfulness" },
+    { ref: "Micah 6:8", theme: "Justice" },
+    { ref: "1 Thessalonians 5:16-18", theme: "Gratitude" },
+    { ref: "Psalm 100:4-5", theme: "Thanksgiving" },
+    { ref: "Ephesians 2:8-9", theme: "Grace" },
+    { ref: "Romans 5:8", theme: "Love" },
+    { ref: "1 John 4:19", theme: "Love" },
+    { ref: "Psalm 37:4-5", theme: "Trust" },
+    { ref: "Proverbs 16:3", theme: "Plans" },
+    { ref: "Isaiah 26:3", theme: "Peace" },
+    { ref: "John 14:27", theme: "Peace" },
+    { ref: "John 15:5", theme: "Abiding" },
+    { ref: "Psalm 139:13-14", theme: "Worth" },
+    { ref: "Psalm 51:10-12", theme: "Renewal" },
+    { ref: "Matthew 7:7-8", theme: "Asking" },
+    { ref: "Philippians 4:13", theme: "Strength" },
+    { ref: "Psalm 62:1-2", theme: "Rest" },
+    { ref: "Deuteronomy 31:6", theme: "Courage" },
+    { ref: "Romans 15:13", theme: "Hope" },
+    { ref: "2 Timothy 1:7", theme: "Courage" },
+    { ref: "Psalm 90:12", theme: "Wisdom" },
+    { ref: "Galatians 6:9", theme: "Perseverance" },
+    { ref: "Hebrews 12:1-2", theme: "Endurance" },
+    { ref: "Psalm 16:8", theme: "Steadiness" },
+    { ref: "Psalm 30:5", theme: "Joy" },
+    { ref: "Nehemiah 8:10", theme: "Joy" },
+    { ref: "Isaiah 43:2", theme: "Presence" },
+    { ref: "Psalm 91:1-2", theme: "Shelter" },
+    { ref: "Matthew 28:20", theme: "Presence" },
+    { ref: "Romans 8:38-39", theme: "Love" },
+    { ref: "Ephesians 3:20-21", theme: "Power" },
+    { ref: "James 4:8", theme: "Nearness" },
+    { ref: "Psalm 145:18", theme: "Nearness" },
+    { ref: "Colossians 3:12-14", theme: "Compassion" },
+    { ref: "1 Corinthians 13:4-7", theme: "Love" },
+    { ref: "Psalm 73:26", theme: "Strength" },
+    { ref: "Matthew 5:14-16", theme: "Light" }
+  ];
+  function defaults() {
+    return {
+      slots: [
+        { id: 's1', label: 'Morning prayer', time: '06:30', on: true },
+        { id: 's2', label: 'Midday prayer', time: '12:30', on: true },
+        { id: 's3', label: 'Evening prayer', time: '18:30', on: true },
+        { id: 's4', label: 'Night prayer', time: '21:30', on: true }
+      ],
+      done: {}, requests: [], journal: [], verse: { day: '', offset: 0 }, quote: { day: '', offset: 0 }, devRead: {}, eveRead: {}, lastBackup: ''
+    };
+  }
+  var memStore = null;
+  function load() {
+    var raw = null;
+    try { raw = localStorage.getItem(KEY); } catch (e) {}
+    if (!raw && memStore) raw = memStore;
+    if (!raw) return defaults();
+    try {
+      var d = JSON.parse(raw), base = defaults();
+      return {
+        slots: Array.isArray(d.slots) ? d.slots : base.slots,
+        done: d.done && typeof d.done === 'object' ? d.done : {},
+        requests: Array.isArray(d.requests) ? d.requests : [],
+        journal: Array.isArray(d.journal) ? d.journal : [],
+        verse: d.verse && typeof d.verse === 'object' ? d.verse : { day: '', offset: 0 },
+        quote: d.quote && typeof d.quote === 'object' ? d.quote : { day: '', offset: 0 },
+        devRead: d.devRead && typeof d.devRead === 'object' ? d.devRead : {},
+        eveRead: d.eveRead && typeof d.eveRead === 'object' ? d.eveRead : {},
+        lastBackup: typeof d.lastBackup === 'string' ? d.lastBackup : ''
+      };
+    } catch (e) { return defaults(); }
+  }
+  function save() {
+    var s = JSON.stringify(S);
+    memStore = s;
+    try { localStorage.setItem(KEY, s); } catch (e) {}
+  }
+
+  var S = load();
+  var tab = 'today';
+  var ui = { filter: 'open', answering: null, confirm: null, flash: '', session: null, openRefs: {}, devOpen: '', editing: null, backupShow: false, pendingRestore: null, focus: true, weekOffset: 0, part: 'morning', partManual: false, eveOpen: '' };
+
+  function uid() { return Math.random().toString(36).slice(2, 9) + Date.now().toString(36); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function dkey(d) { d = d || new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function toMin(t) { var p = String(t || '0:0').split(':'); return (+p[0] || 0) * 60 + (+p[1] || 0); }
+  function fmt(t) { var m = toMin(t), h = Math.floor(m / 60), mm = m % 60; return (h % 12 || 12) + ':' + pad(mm) + ' ' + (h >= 12 ? 'PM' : 'AM'); }
+  function niceDay(key) { return new Date(key + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); }
+  function byTime(a, b) { return toMin(a.time) - toMin(b.time); }
+  function isDone(id, day) { var d = S.done[day || dkey()]; return !!(d && d[id]); }
+  function anyDone(day) { var d = S.done[day]; return !!(d && Object.keys(d).length); }
+  function streak() {
+    var d = new Date(), n = 0;
+    if (!anyDone(dkey(d))) d.setDate(d.getDate() - 1);
+    while (anyDone(dkey(d))) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+  function prayedToday(r) { return (r.prayed || []).indexOf(dkey()) !== -1; }
+  function lastPrayed(r) { var p = r.prayed || []; return p.length ? p[p.length - 1] : ''; }
+
+  function arcPts(n) {
+    var P0 = [24, 108], P1 = [160, -40], P2 = [296, 108];
+    var out = [];
+    for (var i = 0; i < n; i++) {
+      var t = (i + 0.5) / n, u = 1 - t;
+      out.push([u * u * P0[0] + 2 * u * t * P1[0] + t * t * P2[0], u * u * P0[1] + 2 * u * t * P1[1] + t * t * P2[1]]);
+    }
+    return out;
+  }
+
+  /* ---------- guided prayer content ---------- */
+  var GUIDES = {
+    acts: {
+      name: 'ACTS', tag: 'Adoration, Confession, Thanksgiving, Supplication', mins: 'About 10 minutes',
+      desc: 'A four-part pattern that moves from praising God, to being honest with him, to thanking him, to asking for help.',
+      steps: [
+        { title: 'Adoration', lead: 'Praise God for who he is.', mins: 'About 2 minutes',
+          body: 'Start by looking at God, not at your list. Before you ask for anything, remind yourself who you\u2019re speaking to.',
+          prompts: ['Pick one quality of God, such as holy, faithful, merciful or near, and stay with it.', 'Say it back to him: \u201cYou are\u2026\u201d', 'Think of one way you\u2019ve seen that quality in your own life.'],
+          refs: ['Psalm 145:1-5', 'Psalm 96:1-4', 'Revelation 4:8-11'], ph: 'Words of praise (optional)' },
+        { title: 'Confession', lead: 'Be honest about where you fell short.', mins: 'About 2 minutes',
+          body: 'You don\u2019t need fancy words. Tell him plainly what you\u2019ve done or left undone, then receive the forgiveness he promises. End by accepting forgiveness, not by dwelling on guilt.',
+          prompts: ['Where have you been impatient, unkind, proud or careless lately?', 'What did you avoid that you knew you should do?', 'Is there someone you need to forgive, or make things right with?'],
+          refs: ['1 John 1:9', 'Psalm 51:1-4', 'Psalm 32:1-5'], ph: 'What you\u2019re bringing to God (optional)' },
+        { title: 'Thanksgiving', lead: 'Thank God for what he has given and done.', mins: 'About 2 minutes',
+          body: 'Gratitude moves your attention from what\u2019s missing to what you already have.',
+          prompts: ['Name three gifts from today, big or small.', 'Thank him for something he has carried you through.', 'Thank him for a person in your life.'],
+          refs: ['Psalm 103:1-5', '1 Thessalonians 5:16-18', 'Psalm 136:1-3'], ph: 'What you\u2019re thankful for (optional)' },
+        { title: 'Supplication', lead: 'Bring your needs, and the needs of others.', mins: 'About 4 minutes',
+          body: 'Ask plainly and specifically. Pray for others first, then for yourself, and end with \u201cyour will be done.\u201d',
+          prompts: ['Go through your open requests below and pray for each one.', 'Bring your own needs: work, health, decisions, wisdom.', 'Is there anyone else who needs prayer today?'],
+          refs: ['Philippians 4:6-7', 'Matthew 7:7-8'], requests: true, ph: 'Anything else you\u2019re asking (optional)' }
+      ]
+    },
+    lords: {
+      name: 'The Lord\u2019s Prayer', tag: 'Pray it one line at a time', mins: 'About 7 minutes',
+      desc: 'Jesus gave this prayer as a pattern. Slow down, pray each line, and add your own words.',
+      steps: [
+        { title: 'Our Father', line: 'Our Father which art in heaven,', mins: 'About 1 minute',
+          body: 'Start with who you\u2019re talking to. You come as a child to a Father who is near, and who is also above all things.',
+          prompts: ['Take a slow breath and say \u201cFather.\u201d', 'What does it mean that he is yours, and also ours?'] },
+        { title: 'Hallowed be thy name', line: 'Hallowed be thy name.', mins: 'About 1 minute',
+          body: 'To hallow his name is to honor him as holy. Ask that he be honored in your life today.',
+          prompts: ['Where does God\u2019s name need to be honored in your home, work or church?', 'Is there anything in your day that would dishonor him? Ask for help.'] },
+        { title: 'Thy kingdom come', line: 'Thy kingdom come. Thy will be done in earth, as it is in heaven.', mins: 'About 1 minute',
+          body: 'This is a prayer of surrender. Hand over the places where you\u2019d rather have your own way.',
+          prompts: ['What situation do you need to yield to God?', 'Ask for his rule and his way in it.'] },
+        { title: 'Daily bread', line: 'Give us this day our daily bread.', mins: 'About 1 minute',
+          body: 'Ask for today\u2019s needs, not next year\u2019s. This line is about trusting God one day at a time.',
+          prompts: ['What do you need today: strength, provision, patience, rest?', 'Who else needs daily bread? Pray for them by name.'] },
+        { title: 'Forgive us', line: 'And forgive us our debts, as we forgive our debtors.', mins: 'About 2 minutes',
+          body: 'This line runs in two directions: receiving forgiveness and giving it.',
+          prompts: ['What do you need to be forgiven for? Say it plainly.', 'Who do you need to forgive? Name them and ask for help to let go.'] },
+        { title: 'Deliver us', line: 'And lead us not into temptation, but deliver us from evil.', mins: 'About 1 minute',
+          body: 'Ask for protection and for a way through the places where you\u2019re weakest.',
+          prompts: ['Where are you most tempted or most tired right now?', 'Ask for wisdom, a way out, and strength to take it.'] },
+        { title: 'Amen', line: 'For thine is the kingdom, and the power, and the glory, for ever. Amen.', mins: 'About 1 minute',
+          body: 'This closing line is the traditional ending used in many churches. Some Bible translations leave it out of the text. End by praising God, and say \u201cAmen,\u201d which means \u201clet it be so.\u201d',
+          prompts: ['Close with a sentence of praise in your own words.'] }
+      ],
+      note: 'Traditional (King James) wording. Tap Matthew 6:9-13 above to read it in a modern translation.', refs: ['Matthew 6:9-13']
+    },
+    psalm: {
+      name: 'Pray a Psalm', tag: 'Read it, pray it back, take it with you', mins: 'About 5 minutes',
+      desc: 'The psalms were written to be prayed. Choose one that fits how you feel today, and use it as your words.'
+    }
+  };
+  var PSALM_NEEDS = [
+    ['When you\u2019re anxious or afraid', ['Psalm 23', 'Psalm 27', 'Psalm 46', 'Psalm 91', 'Psalm 121']],
+    ['When you need mercy', ['Psalm 32', 'Psalm 51', 'Psalm 130']],
+    ['When you\u2019re thankful', ['Psalm 100', 'Psalm 103', 'Psalm 107', 'Psalm 136']],
+    ['When you want to praise', ['Psalm 8', 'Psalm 19', 'Psalm 96', 'Psalm 145', 'Psalm 150']],
+    ['When you\u2019re hurting', ['Psalm 13', 'Psalm 22', 'Psalm 88']],
+    ['When you\u2019re weary', ['Psalm 62', 'Psalm 63', 'Psalm 131']],
+    ['When you need guidance', ['Psalm 25', 'Psalm 37', 'Psalm 119:105-112']],
+    ['When you long for God', ['Psalm 42', 'Psalm 84', 'Psalm 143']],
+    ['When you\u2019re doubting', ['Psalm 73', 'Psalm 77']]
+  ];
+  function psalmSteps(ref) {
+    return [
+      { title: 'Read it slowly', lead: ref, mins: 'About 2 minutes',
+        body: 'Read the psalm all the way through. Then go back and read it again a few verses at a time, pausing on any line that catches you.',
+        prompts: ['Who is speaking in this psalm, and what are they feeling?', 'What does it say about God?'], refs: [ref], open: true, ph: '' },
+      { title: 'Pray it back', lead: ref, mins: 'About 2 minutes',
+        body: 'Turn the lines into your own words to God. If a line fits you, make it yours. If it doesn\u2019t, pray it for someone it does fit.',
+        prompts: ['Which line stands out to you? Say it back to God.', 'What is the psalm praising, asking or admitting? Do the same in your own words.'], refs: [ref], ph: 'Your prayer (optional)' },
+      { title: 'Take it with you', lead: ref, mins: 'About 1 minute',
+        body: 'Close by asking God to keep this psalm with you through the day.',
+        prompts: ['What is one line or thought to remember today?', 'Who could you pray this psalm for?'], ph: 'What you\u2019re taking with you (optional)' }
+    ];
+  }
+  function csbUrl(ref) { return 'https://www.biblegateway.com/passage/?search=' + encodeURIComponent(ref) + '&version=CSB'; }
+  function sessionSteps(ss) { return ss.kind === 'psalm' ? psalmSteps(ss.psalm) : GUIDES[ss.kind].steps; }
+  function sessionTitle(ss) { return ss.kind === 'psalm' ? 'Praying ' + ss.psalm : GUIDES[ss.kind].name; }
+  function sessionText(ss) {
+    var parts = [];
+    sessionSteps(ss).forEach(function (st, i) { var n = (ss.notes[i] || '').trim(); if (n) parts.push(st.title + ': ' + n); });
+    return parts.length ? sessionTitle(ss) + '\n\n' + parts.join('\n\n') : '';
+  }
+
+  /* ---------- Bible text (Berean Standard Bible, public domain) ---------- */
+  var BOOK_IDS = {
+    'genesis': 'GEN', 'exodus': 'EXO', 'leviticus': 'LEV', 'numbers': 'NUM', 'deuteronomy': 'DEU', 'joshua': 'JOS', 'judges': 'JDG', 'ruth': 'RUT',
+    '1 samuel': '1SA', '2 samuel': '2SA', '1 kings': '1KI', '2 kings': '2KI', '1 chronicles': '1CH', '2 chronicles': '2CH', 'ezra': 'EZR', 'nehemiah': 'NEH', 'esther': 'EST', 'job': 'JOB',
+    'psalm': 'PSA', 'psalms': 'PSA', 'proverbs': 'PRO', 'ecclesiastes': 'ECC', 'song of solomon': 'SNG', 'isaiah': 'ISA', 'jeremiah': 'JER', 'lamentations': 'LAM', 'ezekiel': 'EZK', 'daniel': 'DAN',
+    'hosea': 'HOS', 'joel': 'JOL', 'amos': 'AMO', 'obadiah': 'OBA', 'jonah': 'JON', 'micah': 'MIC', 'nahum': 'NAM', 'habakkuk': 'HAB', 'zephaniah': 'ZEP', 'haggai': 'HAG', 'zechariah': 'ZEC', 'malachi': 'MAL',
+    'matthew': 'MAT', 'mark': 'MRK', 'luke': 'LUK', 'john': 'JHN', 'acts': 'ACT', 'romans': 'ROM', '1 corinthians': '1CO', '2 corinthians': '2CO', 'galatians': 'GAL', 'ephesians': 'EPH', 'philippians': 'PHP', 'colossians': 'COL',
+    '1 thessalonians': '1TH', '2 thessalonians': '2TH', '1 timothy': '1TI', '2 timothy': '2TI', 'titus': 'TIT', 'philemon': 'PHM', 'hebrews': 'HEB', 'james': 'JAS', '1 peter': '1PE', '2 peter': '2PE',
+    '1 john': '1JN', '2 john': '2JN', '3 john': '3JN', 'jude': 'JUD', 'revelation': 'REV'
+  };
+  var BIBLE_API = 'https://bible.helloao.org/api/BSB/';
+  var passages = {};
+  var chapterCache = {};
+
+  function parseRef(ref) {
+    var m = /^\s*((?:[123]\s)?[A-Za-z][A-Za-z ]*?)\s+(\d+)(?::(\d+)(?:-(\d+))?)?\s*$/.exec(ref);
+    if (!m) return null;
+    var id = BOOK_IDS[m[1].toLowerCase().replace(/\s+/g, ' ').trim()];
+    if (!id) return null;
+    var v1 = m[3] ? +m[3] : 0;
+    return { book: id, ch: +m[2], v1: v1, v2: m[4] ? +m[4] : v1 };
+  }
+  function verseText(items) {
+    var out = [];
+    (items || []).forEach(function (it) {
+      if (typeof it === 'string') out.push(it);
+      else if (it && typeof it.text === 'string') out.push(it.text);
+      else if (it && it.lineBreak) out.push(' ');
+    });
+    return out.join(' ').replace(/\s+/g, ' ').replace(/\s+([,.;:!?])/g, '$1').trim();
+  }
+  function parseChapter(json) {
+    var out = [], content = (json && json.chapter && json.chapter.content) || [];
+    content.forEach(function (c) { if (c && c.type === 'verse') out.push({ n: c.number, t: verseText(c.content) }); });
+    return out;
+  }
+  function loadChapter(book, ch) {
+    var key = book + '.' + ch;
+    if (chapterCache[key]) return Promise.resolve(chapterCache[key]);
+    var stored = null;
+    try { stored = localStorage.getItem('prayerbook:bsb:' + key); } catch (e) {}
+    if (stored) {
+      try { var cached = JSON.parse(stored); if (Array.isArray(cached) && cached.length) { chapterCache[key] = cached; return Promise.resolve(cached); } } catch (e) {}
+    }
+    if (typeof fetch !== 'function') return Promise.reject(new Error('fetch unavailable'));
+    var ctl = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 15000);
+    return fetch(BIBLE_API + book + '/' + ch + '.json', ctl ? { signal: ctl.signal } : undefined).then(function (r) {
+      if (!r.ok) throw new Error('http ' + r.status);
+      return r.json();
+    }).then(function (j) {
+      clearTimeout(timer);
+      var verses = parseChapter(j);
+      if (!verses.length) throw new Error('empty chapter');
+      chapterCache[key] = verses;
+      try { localStorage.setItem('prayerbook:bsb:' + key, JSON.stringify(verses)); } catch (e) {}
+      return verses;
+    }, function (e) { clearTimeout(timer); throw e; });
+  }
+  function loadPassage(ref) {
+    var p = parseRef(ref);
+    if (!p) { passages[ref] = { status: 'err' }; return; }
+    passages[ref] = { status: 'loading' };
+    loadChapter(p.book, p.ch).then(function (verses) {
+      var sel = p.v1 ? verses.filter(function (v) { return v.n >= p.v1 && v.n <= p.v2; }) : verses;
+      passages[ref] = sel.length ? { status: 'ok', verses: sel } : { status: 'err' };
+    }, function () { passages[ref] = { status: 'err' }; }).then(function () { fillPassages(ref); });
+  }
+  function passageInner(ref, noHead) {
+    var st = passages[ref];
+    var head = noHead ? '' : '<p class="passage-ref">' + esc(ref) + '</p>';
+    var foot = '<p class="passage-foot">Berean Standard Bible (public domain). <a href="' + csbUrl(ref) + '" target="_blank" rel="noopener noreferrer">Compare in CSB</a></p>';
+    if (!st || st.status === 'loading') return head + '<p class="passage-text small">Loading\u2026</p>' + foot;
+    if (st.status === 'err') {
+      return head + '<p class="passage-text small">This passage couldn\u2019t load. It needs an internet connection the first time you open it. ' +
+        '<button class="btn small quiet" data-act="retrypassage" data-id="' + esc(ref) + '">Try again</button></p>' + foot;
+    }
+    var multi = st.verses.length > 1;
+    var body = st.verses.map(function (v) { return (multi ? '<sup>' + v.n + '</sup>' : '') + esc(v.t); }).join(' ');
+    return head + '<p class="passage-text">' + body + '</p>' + foot;
+  }
+  function passageBox(ref, noHead) {
+    return '<div class="passage" data-passage="' + esc(ref) + '"' + (noHead ? ' data-nohead="1"' : '') + '></div>';
+  }
+  function fillPassages(only) {
+    var els = document.querySelectorAll('[data-passage]');
+    for (var i = 0; i < els.length; i++) {
+      var ref = els[i].getAttribute('data-passage');
+      if (only && ref !== only) continue;
+      if (!passages[ref]) loadPassage(ref);
+      els[i].innerHTML = passageInner(ref, els[i].getAttribute('data-nohead') === '1');
+    }
+  }
+  function hydratePassages() { fillPassages(null); }
+
+  var DEVOS = [
+    {"d": "2026-09-20", "ref": "Psalm 122:1", "theme": "Gathering", "r": "There’s a gladness that only shows up when people move toward God together. It’s easy to treat Sunday as one more obligation, or to drift in tired and distracted. Come expecting a little gladness anyway. You don’t need to feel fervent; you only need to show up. God often meets us through the person sitting next to us.", "q": ["What makes gathering with others hard for me right now?", "Who could I greet or encourage today?"], "p": "Lord, make me glad to be in your house today, and open my heart to those around me. Amen.", "k": "banquet", "s": 1},
+    {"d": "2026-09-27", "ref": "Psalm 92:1-2", "theme": "Praise", "r": "The psalmist bookends the day with praise: love in the morning, faithfulness at night. It’s a simple rhythm that changes how a day feels. Try it today. Begin by naming one thing about God you’re thankful for, and end the day by naming one way you saw his faithfulness. Praise is a habit before it is a feeling.", "q": ["What is one thing about God I can thank him for this morning?", "How might I notice his faithfulness by tonight?"], "p": "Lord, let my day begin and end with you. Amen.", "k": "blessings flow", "s": 1},
+    {"d": "2026-10-01", "ref": "1 Timothy 2:1-2", "theme": "Your nation", "r": "Paul’s first instruction to the church isn’t to complain about leaders or to ignore them, but to pray for them. That includes people we didn’t choose and may not trust. Praying for a government doesn’t endorse everything it does. It asks God for justice, peace and wisdom where decisions touch ordinary lives. Pray today for your country and for those who lead it, by name if you can.", "q": ["Which leaders or situations in my country need prayer most?", "How could I pray for them without cynicism?"], "p": "Father, give wisdom, honesty and mercy to those in authority, and peace to our land. Amen.", "k": "tranquility of order"},
+    {"d": "2026-10-04", "ref": "Mark 2:27", "theme": "Rest", "r": "Jesus says the Sabbath was made for people, not people for the Sabbath. Rest isn’t a reward for finishing everything. It’s a gift built into the shape of the week. If you’re the sort of person who always has one more thing to do, resting today is a small act of trust that God holds the world without your help.", "q": ["What would real rest look like for me today?", "What am I afraid will fall apart if I stop?"], "p": "Lord of the Sabbath, teach me to receive rest as a gift and not as a reward. Amen.", "k": "Be at peace with your own soul", "s": 1},
+    {"d": "2026-10-11", "ref": "Psalm 84:1-2", "theme": "Longing", "r": "The psalmist isn’t describing duty but longing: a soul that faints for God’s presence. Some days we don’t feel that ache, and it’s worth being honest about that. But longing can be asked for. If your heart feels flat this morning, tell God so, and ask him to stir up the desire you wish you had.", "q": ["Do I feel any longing for God today? If not, what has dulled it?", "What is one way I could draw near to him?"], "p": "Lord, if I don’t long for you, make me want to. Amen.", "k": "Late have I loved you", "s": 1},
+    {"d": "2026-10-18", "ref": "Colossians 4:14", "theme": "Luke the physician", "r": "Today the church remembers Luke, whom Paul calls a dear friend and a physician. Luke also wrote a Gospel and the book of Acts, and he seems to have stayed with Paul when others left. For Luke, caring for the sick and telling the story of Jesus were both ways of loving people. Whatever your work is, it can be a place where you notice and serve others.", "q": ["How is my work a way of caring for people?", "Who needs a faithful friend at their side this week?"], "p": "Lord, bless all who care for the sick, and make my work a service to others. Amen.", "k": "proof of love"},
+    {"d": "2026-10-25", "ref": "Luke 22:19-20", "theme": "Remembering", "r": "Christians differ on how, but we agree on this: Jesus asked his followers to remember him at the table. Remembering isn’t only recalling a fact. It’s letting the story shape who you are again. Whether or not you share communion today, take a moment to remember that his body was given and his blood poured out for you.", "q": ["What does it mean to me that Jesus gave himself for me?", "What do I most need to remember today?"], "p": "Lord Jesus, help me remember what you have done, and live in the light of it. Amen.", "k": "wondrous cross", "s": 1},
+    {"d": "2026-10-31", "ref": "Ephesians 2:8-10", "theme": "Grace", "r": "For many Christians today recalls the Reformation, when believers rediscovered how much of the gospel is gift. Whatever your tradition, the verse stands: you were saved by grace, through faith, and it wasn’t your doing. The good works that follow aren’t payment. They’re what a saved person does. Rest in that before you get busy.", "q": ["Where am I trying to earn what God has already given?", "What good work has he prepared for me today?"], "p": "Father, thank you that salvation is a gift. Let my work flow from gratitude and not from fear. Amen.", "k": "taught my heart"},
+    {"d": "2026-11-01", "ref": "Hebrews 12:1-2", "theme": "All Saints", "r": "Today many churches remember the saints, the faithful who have gone before us. Hebrews pictures them as witnesses who show the race can be finished. You aren’t running alone or first. Give thanks for someone whose faith helped you, and keep your eyes on Jesus, who is both the example and the finish line.", "q": ["Whose faith has helped me most, and have I thanked God for them?", "What is weighing me down that I could lay aside?"], "p": "God of all the saints, thank you for those who showed me the way. Fix my eyes on Jesus. Amen.", "k": "eighty-six years"},
+    {"d": "2026-11-02", "ref": "John 11:25-26", "theme": "Remembering the departed", "r": "Grief doesn’t keep a schedule. Today many Christians remember those who have died. Jesus doesn’t tell Martha to stop crying. He tells her who he is: the resurrection and the life. If there’s someone you miss, you can bring them to him today with gratitude and with tears, trusting them to his mercy.", "q": ["Who am I remembering today, and what am I thankful for about them?", "What do I want to say to Jesus about my loss?"], "p": "Lord Jesus, you are the resurrection and the life. Comfort those who grieve, and hold our loved ones in your mercy. Amen.", "k": "life reigns"},
+    {"d": "2026-11-08", "ref": "Acts 2:42", "theme": "Together", "r": "The first believers gave themselves to four things: the apostles’ teaching, fellowship, breaking bread, and prayer. Nothing exotic. Their faith grew through ordinary, repeated habits shared with other people. Which of the four is thinnest in your life right now? Pick one to strengthen this week, and invite someone to join you.", "q": ["Which of these four is weakest for me right now?", "Who could I share it with?"], "p": "Lord, give me a hunger for the simple habits that keep me near you and your people. Amen.", "k": "God as your Father", "s": 1},
+    {"d": "2026-11-15", "ref": "Hebrews 10:24-25", "theme": "Encouragement", "r": "Encouragement isn’t a personality type. It’s a habit the writer commands: stir one another up toward love and good works. That usually happens in small ways, like a message, a question or a meal. Who could use a word from you today? Send it before the day gets away.", "q": ["Who comes to mind when I think of someone who is struggling?", "What is one specific thing I could say to encourage them?"], "p": "Lord, use me to lift someone up today. Amen.", "k": "island", "s": 1},
+    {"d": "2026-11-22", "ref": "Colossians 1:15-18", "theme": "Christ the King", "r": "Today many churches celebrate Christ as King, the last Sunday before Advent. Paul describes him as the image of the invisible God, the one through whom and for whom all things were made, and in whom they hold together. That means no part of your week is outside his rule, including the parts that feel out of control. The one who holds the universe together can hold your Monday.", "q": ["What part of my life am I treating as outside Christ’s rule?", "What would it mean to say “You are Lord of this” today?"], "p": "Christ the King, hold together what I cannot. Rule in my heart and in my day. Amen.", "k": "Christ within me"},
+    {"d": "2026-11-26", "ref": "Psalm 107:1-2", "theme": "Thanks", "r": "Some days are set aside for thanks, and there’s wisdom in that: gratitude needs practice. Try naming, out loud, five specific things you’re thankful for. Include one that’s hard to be thankful for, and one person who doesn’t know how much they mean to you. Then thank the one who gives every good gift.", "q": ["What am I thankful for that I usually overlook?", "Who could I thank today, in person or in writing?"], "p": "Lord, you are good, and your love endures. Thank you for all you’ve given. Amen.", "k": "creation, preservation"},
+    {"d": "2026-11-29", "ref": "Romans 13:11-12", "theme": "Waking up", "r": "Advent begins today, and the season opens with an alarm: wake up, the night is nearly over. Paul isn’t scolding. He’s reminding drowsy people that morning is closer than they think. Advent is the church’s way of training us to live awake to the fact that Christ has come, comes to us now, and will come again. What in your life needs waking?", "q": ["Where have I grown drowsy in my faith?", "What would it look like to live this Advent awake?"], "p": "Lord Jesus, wake me from spiritual sleep. Let this Advent draw me close to you. Amen.", "k": "Lighten our darkness", "se": "Advent"},
+    {"d": "2026-11-30", "ref": "Mark 13:33-37", "theme": "Watch", "r": "Jesus tells a story about a master who leaves and a doorkeeper told to stay alert. Watching doesn’t mean anxiety. It means faithful attention: doing the work you’ve been given while staying aware that the master will return. Today, do one ordinary thing as if you were doing it for him, because you are.", "q": ["What has Christ given me to do while I wait?", "How can I stay alert without being anxious?"], "p": "Lord, keep me faithful and watchful until you come. Amen.", "k": "dying man to dying men", "se": "Advent"},
+    {"d": "2026-12-01", "ref": "Psalm 130:5-6", "theme": "Waiting", "r": "“My soul waits for the Lord more than watchmen wait for the morning.” Watchmen know the morning is coming, and still the night is long. Advent gives us words for waiting without pretending it’s easy. What are you waiting for? Bring it to God, and let the waiting be a kind of prayer.", "q": ["What am I waiting for right now?", "How could waiting itself become a prayer?"], "p": "Lord, my soul waits for you. Give me patience in the night. Amen.", "k": "have mercy on me, a sinner", "se": "Advent"},
+    {"d": "2026-12-02", "ref": "Isaiah 2:5", "theme": "Walking in the light", "r": "Come, let us walk in the light of the Lord. It’s an invitation to move, not just to admire the light from a distance. Light is given for the next step. What step has been waiting for you? Take it this Advent, trusting that he lights the road as you go.", "q": ["What step have I been avoiding?", "How could I walk in the light of God today?"], "p": "Lord, let us walk in your light today. Amen.", "k": "kindly Light", "se": "Advent"},
+    {"d": "2026-12-03", "ref": "Psalm 24:7-10", "theme": "King of glory", "r": "The gates are told to lift their heads because the King of glory is coming in. Advent teaches us to prepare room for him. Not the room of a tidy house, but the room of a heart that is open. What gate in you has been shut, and could you lift it today?", "q": ["What part of my heart have I kept closed?", "What would it mean to welcome the King there?"], "p": "King of glory, come in. Open every gate in me. Amen.", "k": "all hearts be open", "se": "Advent"},
+    {"d": "2026-12-04", "ref": "Isaiah 9:2", "theme": "Light in darkness", "r": "The people who walked in darkness have seen a great light. Notice the tense: seen, not “might see.” Isaiah speaks as if it has already happened. In a season that is bright with decoration, some of us are in a dark place. This verse isn’t for people who have their light sorted. It’s for people in the dark.", "q": ["Where do I feel I’m walking in darkness?", "What would it mean to look for his light there?"], "p": "Light of the world, shine where I can’t see. Amen.", "k": "Lighten our darkness", "se": "Advent"},
+    {"d": "2026-12-05", "ref": "Luke 21:28", "theme": "Lift your heads", "r": "When things begin to fall apart, Jesus says to stand up and lift your heads because redemption is drawing near. It’s the opposite of the instinct to cower. Advent is a season for lifting our eyes past the noise of the news to the one who is coming. Where do you need to look up today?", "q": ["What is making me want to look down?", "How could I lift my eyes to Christ today?"], "p": "Lord, when the world shakes, help me lift my head to you. Amen.", "k": "kindly Light", "se": "Advent"},
+    {"d": "2026-12-06", "ref": "Isaiah 40:1-5", "theme": "Comfort", "r": "“Comfort, comfort my people.” The prophet is speaking to people who had been in exile for a long time. God’s first word isn’t rebuke but tenderness. Advent begins with comfort, and then a road is built through the wilderness. Wherever you need comfort today, God begins with kindness.", "q": ["What do I need comfort for today?", "How might God be speaking kindly to me?"], "p": "Lord, speak comfort to my heart today. Amen.", "k": "all manner of thing", "se": "Advent"},
+    {"d": "2026-12-07", "ref": "Luke 3:3-6", "theme": "Prepare the way", "r": "John the Baptist calls people to prepare for the Lord by repentance. The image is of road-building: filling valleys, flattening hills, straightening what is crooked. Repentance is preparation, not punishment. What crooked place in your life could you ask God to straighten this Advent?", "q": ["What needs straightening in me?", "What is one act of repentance I could offer him this week?"], "p": "Lord, prepare in me a way for you. Amen.", "k": "hatest nothing", "se": "Advent"},
+    {"d": "2026-12-08", "ref": "Malachi 3:1", "theme": "The messenger", "r": "Malachi speaks of a messenger sent to prepare the way, and then the Lord himself will suddenly come to his temple. The Christian church sees this fulfilled in John and in Christ. The surprising thing is “suddenly.” God’s arrival is not always announced with a long lead. Be ready today, not just on the calendar’s schedule.", "q": ["What would it mean to be ready for God today?", "What do I need to attend to before he arrives?"], "p": "Lord, make me ready for your coming. Amen.", "k": "", "se": "Advent"},
+    {"d": "2026-12-09", "ref": "Isaiah 40:9-11", "theme": "The shepherd king", "r": "Isaiah announces good news: here is your God. And then the surprise. He comes with power, yet he tends his flock like a shepherd, gathering the lambs in his arms and gently leading those with young. The one who rules is gentle. If you’ve been afraid of God, look at this picture first.", "q": ["What does it mean that God is gentle with the weak?", "Where do I need to be carried?"], "p": "Shepherd of Israel, gather me in your arms. Amen.", "k": "Love divine", "se": "Advent"},
+    {"d": "2026-12-10", "ref": "Matthew 3:1-3", "theme": "Repentance", "r": "“Repent” means to turn. John’s message is simple: turn toward the one who’s coming. Repentance isn’t self-hatred. It’s reorienting your life toward God. Where do you sense you’ve drifted this year? Turn now, in a small and specific way, and see what he does with it.", "q": ["Where have I drifted from God?", "What does turning back look like today?"], "p": "Lord, I turn to you. Have mercy on me. Amen.", "k": "have mercy on me, a sinner", "se": "Advent"},
+    {"d": "2026-12-11", "ref": "Psalm 85:10-13", "theme": "Peace and righteousness", "r": "Steadfast love and faithfulness meet; righteousness and peace kiss. The psalm pictures two things we often pit against each other, justice and peace, embracing. The Christian hope is that God’s coming brings both. Who do you know that needs both justice and peace this Advent? Pray for them.", "q": ["Where do I see a need for both justice and peace?", "Who could I pray for today?"], "p": "Lord, let righteousness and peace kiss in our world and in my heart. Amen.", "k": "tranquility of order", "se": "Advent"},
+    {"d": "2026-12-12", "ref": "Isaiah 11:1-5", "theme": "A shoot from Jesse", "r": "After the great tree of Israel’s monarchy is cut down to a stump, a shoot appears. Hope grows from what looks finished. Christians see this in Jesus. If some part of your life looks like a stump, Isaiah says God isn’t done. Watch for a shoot.", "q": ["What in my life looks like a stump?", "What would it mean to watch for a shoot of new life?"], "p": "Lord, bring new life where I see only a stump. Amen.", "k": "shall not be overcome", "se": "Advent"},
+    {"d": "2026-12-13", "ref": "Zephaniah 3:14-17", "theme": "Rejoice", "r": "The third week of Advent is traditionally a week of joy. Zephaniah tells us God rejoices over his people with gladness and quiets them with his love. The picture isn’t a stern God waiting for you to earn joy. It’s a God who sings over you. If you can’t feel joyful, let yourself be sung over.", "q": ["What would it mean that God rejoices over me?", "What is one small source of joy I can notice today?"], "p": "Lord, quiet me with your love, and let me rejoice in you. Amen.", "k": "bright and beautiful", "se": "Advent"},
+    {"d": "2026-12-14", "ref": "Philippians 4:4-5", "theme": "Gentleness", "r": "Rejoice always, and let your gentleness be known to everyone, for the Lord is near. Notice the reason: the Lord is near. The season can make us frantic. Gentleness is a discipline. Who will you be gentle with today, especially when things get busy?", "q": ["Where am I most likely to be harsh this week?", "What would gentleness look like there?"], "p": "Lord, make me gentle with everyone, because you are near. Amen.", "k": "blessings flow", "se": "Advent"},
+    {"d": "2026-12-15", "ref": "James 5:7-8", "theme": "Patience", "r": "James uses the farmer as an example: he waits for the precious crop, patient until the early and the late rains. Farmers can’t hurry the rain. Advent is a season for learning to wait without forcing. What are you trying to hurry that needs to ripen in God’s time?", "q": ["What am I trying to rush?", "What would it mean to wait like a farmer?"], "p": "Lord, teach me to wait patiently for your coming. Amen.", "k": "Man proposes", "se": "Advent"},
+    {"d": "2026-12-16", "ref": "Isaiah 35:1-4", "theme": "Be strong", "r": "The desert will bloom, and the weak hands are told to be strong. The message to the fearful: your God will come. Advent isn’t only for the cheerful. It’s for the tired and the anxious. If you’re tired, you’re invited into this promise. Strength is given, not summoned.", "q": ["Where do I feel weak or fearful?", "How does this promise speak to it?"], "p": "Lord, strengthen weak hands and steady trembling knees. Amen.", "k": "shall not be overcome", "se": "Advent"},
+    {"d": "2026-12-17", "ref": "Isaiah 9:6-7", "theme": "A child is born", "r": "Isaiah names the coming child with four names: Wonderful Counselor, Mighty God, Everlasting Father, Prince of Peace. The Christian confession is that this child is God with us. That is astonishing: the Almighty comes small. Pick one of the four names for today. Which one do you need?", "q": ["Which of these names do I need most today?", "What does it mean that God came as a child?"], "p": "Lord Jesus, you are my Counselor, my God, my Father and my Prince of Peace. Amen.", "k": "made man that we might be made God", "se": "Advent"},
+    {"d": "2026-12-18", "ref": "Matthew 1:18-21", "theme": "Joseph", "r": "Joseph is a man in a hard situation, and he is described as a just man who didn’t want to shame Mary. Then an angel tells him to not be afraid. Joseph says nothing in the Gospels, but he does what God asks. Quiet obedience can be as faithful as any speech. What might God be asking of you quietly?", "q": ["What would quiet obedience look like for me?", "Where do I need to hear “do not be afraid”?"], "p": "Lord, give me the quiet faithfulness of Joseph. Amen.", "k": "Christ be with me", "se": "Advent"},
+    {"d": "2026-12-19", "ref": "Luke 1:76-79", "theme": "The dawn", "r": "Zechariah, after months of silence, sings that the dawn from on high will break upon us, to give light to those who sit in darkness and to guide our feet into the way of peace. Notice that God’s mercy is called tender. The sunrise doesn’t shout. It rises. Sit in some quiet today and watch for light.", "q": ["What would tender mercy look like for me today?", "Where do I need light for my next steps?"], "p": "Lord, let your tender mercy shine on me and guide my feet into peace. Amen.", "k": "kindly Light", "se": "Advent"},
+    {"d": "2026-12-20", "ref": "Luke 1:26-33", "theme": "Mary", "r": "The angel greets Mary as favored, and she is troubled. Many of us assume God’s favor means ease, but here it means being given a hard and holy task. Mary’s first response is honest confusion. God isn’t offended by questions. What is God asking of you that is bigger than you feel ready for?", "q": ["What is God asking of me that feels too big?", "What honest question could I bring to him?"], "p": "Lord, you have favored me with your call. Give me courage to answer. Amen.", "k": "your dignity", "se": "Advent"},
+    {"d": "2026-12-21", "ref": "Luke 1:34-38", "theme": "Let it be", "r": "“Let it be to me according to your word.” Mary’s answer is the model of trusting surrender: not passive, but willing. She doesn’t know how it will work. She says yes to the one who does. What would it mean to say “let it be” to something God is asking of you today?", "q": ["What is my “let it be” this Advent?", "What might I be holding back?"], "p": "Lord, let it be to me according to your word. Amen.", "k": "liberty, my memory", "se": "Advent"},
+    {"d": "2026-12-22", "ref": "Luke 1:39-45", "theme": "Elizabeth", "r": "Elizabeth greets Mary with joy and blessing. She celebrates someone else’s calling without envy. There are people in your life whose good news you can amplify. Who could you bless today, especially someone whose gift is different from yours?", "q": ["Whose good news can I celebrate today?", "Where do I feel envy that I could turn into blessing?"], "p": "Lord, make me generous in celebrating what you do in others. Amen.", "k": "island", "se": "Advent"},
+    {"d": "2026-12-23", "ref": "Luke 1:46-50", "theme": "Mary’s song", "r": "“My soul magnifies the Lord.” Mary’s song is one of the great prayers of the church, sung for centuries at evening prayer. She praises God for looking on the humble. A song like this is a good pattern for your own prayers: begin with who God is, and what he has done. Try writing a few lines of your own.", "q": ["What has God done that I could magnify today?", "What are three lines of praise I could write?"], "p": "My soul magnifies the Lord, and my spirit rejoices in God my Savior. Amen.", "k": "blessings flow", "se": "Advent"},
+    {"d": "2026-12-24", "ref": "Luke 2:1-7", "theme": "No room", "r": "Mary and Joseph arrive in Bethlehem, and there is no room for them. The King is born in the margins. If you ever feel there’s no room for you, this story is very near. And it also asks: is there room in me? Make a little room tonight, even if it is a quiet corner of a busy evening.", "q": ["Where in my life is there no room for Jesus?", "How could I make a little room tonight?"], "p": "Lord Jesus, there is room in my heart. Come. Amen.", "k": "Word without a word", "se": "Advent"},
+    {"d": "2026-12-25", "ref": "Luke 2:8-14", "theme": "Good news", "r": "The first announcement of Christ’s birth goes to shepherds working the night shift, overlooked and ordinary. The angel says, “Do not be afraid; I bring you good news of great joy for all the people.” Merry Christmas. Whatever this day looks like for you, the news is for you. Let it be received simply, like a gift.", "q": ["What would it mean to receive this news as a gift?", "Who could I share it with today?"], "p": "Glory to God in the highest, and on earth peace. Thank you for coming, Lord Jesus. Amen.", "k": "your dignity", "se": "Christmas"},
+    {"d": "2026-12-26", "ref": "Acts 7:59-60", "theme": "Stephen", "r": "The day after Christmas the church remembers Stephen, the first martyr. His last words echo Jesus: he entrusts his spirit and asks forgiveness for his killers. Christmas doesn’t end the difficulty of following Christ. It gives the reason to endure it. Is there someone you need to forgive?", "q": ["Who do I need to forgive?", "How does Christ’s example help me?"], "p": "Lord Jesus, receive my spirit, and help me forgive as you forgave. Amen.", "k": "heart without words", "se": "Christmas"},
+    {"d": "2026-12-27", "ref": "1 John 1:1-4", "theme": "Witness", "r": "John writes about what he heard, saw and touched: the Word of life. Christianity begins with an event, not just an idea. God became something you could touch. Today, take a moment to be grateful for the ordinary people who handed the story down to you.", "q": ["Who handed the faith to me?", "What is one way I can pass on what I’ve received?"], "p": "Lord, thank you for the witnesses who told me about you. Amen.", "k": "He became what we are", "se": "Christmas"},
+    {"d": "2026-12-28", "ref": "Matthew 2:13-15", "theme": "Refuge", "r": "Soon after his birth, Jesus’ family becomes refugees, fleeing to Egypt to escape a king’s violence. Today the church remembers the children who suffered in Herod’s anger. Christmas does not hide the world’s cruelty. It enters it. Pray today for children in danger and for families who are displaced.", "q": ["Who could I pray for today who is in danger or displaced?", "What could I do to help someone vulnerable?"], "p": "Lord, protect the children, and shelter those who flee. Amen.", "k": "Christ be with me", "se": "Christmas"},
+    {"d": "2026-12-29", "ref": "Luke 2:25-32", "theme": "Simeon", "r": "Simeon has waited his whole life. When he sees the baby, he can say he’s ready to go in peace. The consolation of Israel is in his arms. Some of us have waited long for something, and God can meet us in an unexpected way. What are you still waiting for? Bring it to him.", "q": ["What have I waited for a long time?", "What would it mean to hold Christ and be at peace?"], "p": "Lord, let me depart in peace, for my eyes have seen your salvation. Amen.", "k": "Be at peace with your own soul", "se": "Christmas"},
+    {"d": "2026-12-30", "ref": "John 1:14-16", "theme": "The Word became flesh", "r": "The Word became flesh and dwelt among us. God didn’t send a message from a distance. He moved into the neighborhood. In Jesus we see grace upon grace. If you’re looking for evidence of God’s love, look here: he came near, and he stays near.", "q": ["What does it mean that God became flesh?", "Where do I need his nearness today?"], "p": "Word made flesh, dwell in me. Thank you for coming near. Amen.", "k": "made man that we might be made God", "se": "Christmas"},
+    {"d": "2026-12-31", "ref": "Lamentations 3:22-26", "theme": "New mercies", "r": "On the last day of the year, we look back and forward. The writer of Lamentations speaks from a broken place and still says that God’s mercies are new every morning. Tonight, you can thank God for what has been, ask forgiveness for what you regret, and entrust what’s coming. His faithfulness is greater than your year.", "q": ["What am I thankful for from this year?", "What do I want to entrust to God as the new year begins?"], "p": "Lord, your mercies are new every morning. Thank you for this year, and be with me in the next. Amen.", "k": "taught my heart", "se": "Christmas"},
+    {"ref": "Psalm 23:1-3", "theme": "Provision", "r": "Sheep don’t have to work out where the grass is. The shepherd leads them. The psalm doesn’t promise every path will be easy, but it does say who is leading. When you feel anxious about what you’ll lack, remember you’re not the one in charge of provision. Let him lead you to rest, even for a few minutes today.", "q": ["What am I trying to provide for myself that I could ask my Shepherd for?", "Where do I need to be led to rest?"], "p": "Lord, you are my shepherd. Lead me today. Amen.", "k": "all manner of thing"},
+    {"ref": "Proverbs 3:5-6", "theme": "Trust", "r": "Trust doesn’t mean switching off your mind. It means not making your own understanding the final authority. When a decision feels unclear, the call isn’t to figure it all out first but to acknowledge God in the step you’re taking. Direction usually comes one step at a time.", "q": ["Where am I leaning entirely on my own understanding?", "What is one step I can take and offer to God?"], "p": "Lord, I don’t see the whole road. Guide the step in front of me. Amen.", "k": "Man proposes"},
+    {"ref": "Philippians 4:6-7", "theme": "Peace", "r": "Paul doesn’t say “never feel anxious.” He says what to do with anxiety: bring it to God, with thanksgiving. The promised peace doesn’t always come with answers. It comes as a guard around your heart and mind. Name what’s worrying you, thank him for something real, and hand the worry over once more.", "q": ["What is worrying me most right now?", "What can I honestly thank God for today?"], "p": "Father, I give you what I’m carrying. Guard my heart and mind with your peace. Amen.", "k": "Spirit of peace"},
+    {"ref": "Isaiah 41:10", "theme": "Courage", "r": "God says “do not fear” because he is with you, not because the situation is safe. Notice the promises: I am with you, I will strengthen you, I will help you, I will uphold you. Fear shrinks when it’s set beside his presence. Whatever you face today, you’re not facing it without him.", "q": ["What am I afraid of today?", "How does knowing he is with me change how I face it?"], "p": "Lord, be my strength and my help today. Amen.", "k": "kindly Light"},
+    {"ref": "Jeremiah 29:11-13", "theme": "Hope", "r": "These words were written to exiles who would spend decades in Babylon before anything changed. God’s plans for them were good, but they were long. Hope here isn’t about quick rescue. It’s about a God who is faithful over years. Seek him with your whole heart, and keep planting gardens where you are.", "q": ["Where am I waiting for something to change?", "How can I seek God wholeheartedly in the waiting?"], "p": "Lord, help me trust your long faithfulness when things move slowly. Amen.", "k": "all hearts be open"},
+    {"ref": "Romans 8:28", "theme": "Purpose", "r": "The verse doesn’t say everything that happens is good. It says God works in all things for the good of those who love him. That’s a claim about the Worker, not about every event. Some things are simply sorrows. But nothing is wasted in his hands. Ask him to work good in the thing you wish hadn’t happened.", "q": ["What am I struggling to see any good in?", "What would it mean to trust him as the one who is working?"], "p": "Father, you can bring good out of what I can’t make sense of. I trust you with it. Amen.", "k": "shall not be overcome"},
+    {"ref": "Matthew 6:33", "theme": "Priorities", "r": "Seek first the kingdom, and the rest follows after, not before. Most of us do the reverse: we deal with the urgent list and hope there’s room left for God. Try one small act of seeking first today, like a prayer before you check your messages, or a moment of thanks before the first meeting.", "q": ["What usually comes first in my day?", "What is one small way to put God first today?"], "p": "Lord, be first in my thoughts and my plans today. Amen.", "k": "work of God"},
+    {"ref": "Psalm 46:10", "theme": "Stillness", "r": "“Be still” isn’t about finding a quiet room. It’s about ceasing to strive and remembering who God is. Try two minutes with no requests. Just sit and remember that he is God and you are not, which is more a relief than a rebuke.", "q": ["What am I striving to control right now?", "What would two minutes of silence with God look like?"], "p": "Lord, quiet my striving. Help me know that you are God. Amen.", "k": "silent and be"},
+    {"ref": "Matthew 11:28-30", "theme": "Rest", "r": "Jesus invites the weary and burdened to come to him. His yoke isn’t the absence of work but work shared, and gentle. If you’re tired, this is an invitation and not a lecture. Come with the weariness you actually have, not the tidy version.", "q": ["Where am I most weary right now?", "What would it mean to take his yoke instead of my own?"], "p": "Jesus, I’m tired. Give me your rest. Amen.", "k": "restless"},
+    {"ref": "1 Peter 5:6-7", "theme": "Worry", "r": "Humility and worry are linked. Worry often assumes we have to hold everything up ourselves. Peter says to cast our anxiety on God because he cares for us. Casting is a deliberate act. Name each worry, hand it to him, and then take the next small step.", "q": ["What worries am I holding that I could hand over?", "What is the next small step after I let go?"], "p": "Father, you care for me. I cast my worries on you. Amen.", "k": "kindly Light"},
+    {"ref": "Galatians 5:22-23", "theme": "Character", "r": "Fruit grows slowly, and it can’t be manufactured by effort. The Spirit produces love, joy, peace, patience, kindness, goodness, faithfulness, gentleness and self-control in people who stay connected to him. Which fruit feels smallest in you right now? Ask for that one, and notice where it gets tested today.", "q": ["Which of these do I most need?", "Where will it be tested today?"], "p": "Holy Spirit, grow in me what I can’t grow on my own. Amen.", "k": "Love, and do what you will"},
+    {"ref": "Colossians 3:23-24", "theme": "Work", "r": "Whatever you do, work at it as for the Lord. That includes the paperwork, the unseen tasks and the difficult people. The audience that matters most isn’t the one in the room. Offer this day’s work to him before you begin, and let that change how you do the small things.", "q": ["What task today feels too small or dull to matter?", "How would I do it if Christ were watching?"], "p": "Lord, receive my work today as an offering to you. Amen.", "k": "cake that is frying"},
+    {"ref": "James 1:5", "theme": "Wisdom", "r": "James says to ask God for wisdom, and that he gives generously without scolding. Many of us hesitate because we think we should already know. Ask plainly about the decision in front of you, and then pay attention over the coming days to counsel, circumstances and Scripture.", "q": ["What decision do I need wisdom for?", "Who wise could I talk to about it?"], "p": "Father, I lack wisdom. Please give it generously. Amen.", "k": "Teach me to seek you"},
+    {"ref": "Psalm 119:105", "theme": "Guidance", "r": "A lamp lights the next few steps, not the whole road. That’s frustrating if you want the map, but it’s how guidance usually works. Read a small passage of Scripture today and ask what one step it suggests. Take that step and see what the lamp shows next.", "q": ["What passage could I read today?", "What one step might it be asking of me?"], "p": "Lord, let your word light my next step. Amen.", "k": "Ignorance of Scripture"},
+    {"ref": "Hebrews 11:1", "theme": "Faith", "r": "Faith isn’t a feeling of certainty. It’s confidence in what God has promised even though it isn’t yet visible. The people in Hebrews 11 mostly didn’t see the promise fulfilled in their lifetime. Faith is a long obedience, not a single leap. What have you been asked to keep doing, unseen?", "q": ["What am I hoping for that I can’t yet see?", "What faithful thing can I keep doing today?"], "p": "Lord, increase my faith to trust what I can’t see. Amen.", "k": "to believe what you do not see"},
+    {"ref": "2 Corinthians 12:9", "theme": "Grace", "r": "Paul asked three times for a weakness to be taken away. The answer wasn’t removal but grace, with power made perfect in weakness. That doesn’t make weakness good, but it means God can work through the parts we’d hide. Where are you weak today? Ask for his grace there, and not only for its removal.", "q": ["Where do I feel weak today?", "How might God’s grace be enough there?"], "p": "Lord, in my weakness, be my strength. Amen.", "k": "poor as I am"},
+    {"ref": "Psalm 27:1", "theme": "Fear", "r": "Light, salvation, stronghold: the psalmist stacks three names for God against fear. Fear doesn’t vanish, but it gets a rival. What are you afraid of today? Say it aloud, then say the verse. Notice which one feels bigger.", "q": ["What fear keeps coming back to me?", "Which of God’s names do I most need today?"], "p": "Lord, you are my light and my stronghold. Whom shall I fear? Amen.", "k": ""},
+    {"ref": "Micah 6:8", "theme": "Justice", "r": "Do justice, love mercy, walk humbly. It’s a short list and it isn’t about being impressive. Justice looks like fairness in ordinary dealings, mercy like patience with failure, humility like staying near God. Which of the three is hardest for you right now?", "q": ["Which of the three do I most need to practice?", "Who could I treat more fairly or more gently today?"], "p": "Lord, teach me to act justly, love mercy and walk humbly with you. Amen.", "k": "steal from them"},
+    {"ref": "1 Thessalonians 5:16-18", "theme": "Gratitude", "r": "Rejoice always, pray continually, give thanks in everything. Paul isn’t asking for fake cheer. He’s describing a way of living turned toward God. Thanks in all circumstances, not for all circumstances. Find one thing today, however small, that you can honestly thank him for.", "q": ["What is one small thing I can thank God for right now?", "What makes it hard to give thanks today?"], "p": "Lord, turn my heart toward gratitude today. Amen.", "k": "bright and beautiful"},
+    {"ref": "Romans 5:8", "theme": "Love", "r": "God didn’t wait for us to be presentable. While we were still sinners, Christ died for us. Love that waits for us to deserve it isn’t what the gospel describes. Let that settle before you start trying to earn anything today.", "q": ["Where do I feel I have to earn love?", "What would it be like to simply receive his?"], "p": "Jesus, thank you for loving me before I deserved it. Amen.", "k": "measure of love"},
+    {"ref": "Psalm 37:4-5", "theme": "Delight", "r": "Delight in the Lord, and commit your way to him. Both verbs are about relationship, not technique. When your delight is in him, your desires slowly change shape. What have you been trying to control that you could commit to him?", "q": ["What gives me delight in God?", "What am I gripping that I can commit to him?"], "p": "Lord, be my delight. I commit my way to you. Amen.", "k": ""},
+    {"ref": "Proverbs 16:3", "theme": "Plans", "r": "Commit your work to the Lord, and your plans will be established. Making plans isn’t unspiritual. Presenting them to God is. Write down what you hope to do this week and hold it out open-handed.", "q": ["What am I planning that I haven’t prayed about?", "What would holding it open-handed look like?"], "p": "Lord, I commit my work and plans to you. Amen.", "k": "definite service"},
+    {"ref": "John 14:27", "theme": "Peace", "r": "Jesus leaves his peace, and it isn’t the world’s kind, which depends on circumstances. His peace is a gift given before the crisis resolves. Take one anxious thought today and answer it with this: he has already given you peace, and you may receive it.", "q": ["What is disturbing my peace today?", "How can I receive the peace he has already given?"], "p": "Lord Jesus, give me your peace, and calm my troubled heart. Amen.", "k": "Let nothing disturb"},
+    {"ref": "John 15:5", "theme": "Abiding", "r": "Branches don’t strain to produce fruit. They stay attached. Abiding is unglamorous: time with Jesus, obedience, staying near. Apart from him, you can do nothing. What has been pulling you away from the vine this week?", "q": ["What pulls me away from staying close to Jesus?", "What is one way to abide today?"], "p": "Jesus, keep me close to you. Bear your fruit in me. Amen.", "k": "soul happy in the Lord"},
+    {"ref": "Psalm 139:13-14", "theme": "Worth", "r": "You were knit together on purpose. That applies to the body you sometimes criticize and the mind you sometimes doubt. Worth isn’t earned. It’s given by the one who made you. Thank him today for one thing about how you’re made.", "q": ["What do I criticize most about myself?", "What can I thank God for in how I’m made?"], "p": "Lord, thank you for making me. Help me see myself as you do. Amen.", "k": "glory of God is a living human"},
+    {"ref": "Psalm 51:10-12", "theme": "Renewal", "r": "David prays this after his worst failure. Notice what he asks for: a clean heart, a steadfast spirit, God’s presence, restored joy. Confession isn’t only about the past. It’s a request to be made new. Bring what you’re ashamed of, and ask for a fresh start.", "q": ["What do I need to bring to God honestly?", "What would a fresh start look like?"], "p": "Create in me a clean heart, O God, and renew a steadfast spirit within me. Amen.", "k": "hatest nothing"},
+    {"ref": "Matthew 7:7-8", "theme": "Asking", "r": "Ask, seek, knock: the verbs are continuous, so keep asking. God isn’t irritated by persistence. It may reveal what you really want, or change what you ask for. What have you stopped praying about because it seemed pointless? Start again.", "q": ["What have I stopped asking God for?", "What would persistent asking look like this week?"], "p": "Father, I keep asking, seeking and knocking. Thank you for hearing. Amen.", "k": "heart without words"},
+    {"ref": "Psalm 62:5-8", "theme": "Pouring out", "r": "Wait in silence for God alone, but also pour out your heart to him. Both are true. The silence isn’t empty and the pouring isn’t rude. Today, don’t edit yourself in prayer. Tell him what’s actually there.", "q": ["What am I holding back from God?", "What would it be like to pour it all out?"], "p": "God, you are my refuge. I pour out my heart to you. Amen.", "k": "surge of the heart"},
+    {"ref": "Isaiah 43:2", "theme": "Presence", "r": "God doesn’t promise to keep you out of the waters or the fire. He promises to be with you in them. That’s a different kind of safety. Where do you feel you’re in deep water right now? Picture him beside you there, and ask him for what you need to keep going.", "q": ["Where do I feel like I’m in deep water?", "What would it mean to know he is with me in it?"], "p": "Lord, be with me in the waters I can’t avoid. Amen.", "k": ""},
+    {"ref": "Romans 15:13", "theme": "Hope", "r": "Hope here is something God gives, and it overflows by the power of the Spirit. It isn’t optimism about how things will turn out. It’s joy and peace in believing. If you feel dry, ask for it directly, and don’t wait until you feel hopeful before you ask.", "q": ["Where is hope running low in me?", "What would it mean to ask for hope as a gift?"], "p": "God of hope, fill me with joy and peace as I trust you. Amen.", "k": "Love divine"},
+    {"ref": "Psalm 90:12", "theme": "Time", "r": "Number your days, and teach us to. It isn’t morbid, it’s clarifying: your time is limited, so the question is what to give it to. Today is one of your days. What is the one thing you want to have done well by tonight?", "q": ["What is the one thing that matters most today?", "What could I let go of to make room for it?"], "p": "Lord, teach me to number my days and gain a heart of wisdom. Amen.", "k": "dying man to dying men"},
+    {"ref": "Galatians 6:9", "theme": "Perseverance", "r": "Don’t grow weary in doing good, for the harvest comes in due time. Notice “in due time.” The delay is part of the design. If you’ve been faithful in something that isn’t bearing visible fruit, keep on. It isn’t wasted.", "q": ["What good work am I tempted to give up on?", "What might a harvest look like in due time?"], "p": "Lord, keep me from growing weary in doing good. Amen.", "k": "live with all my might"},
+    {"ref": "Hebrews 4:15-16", "theme": "Mercy", "r": "Jesus knows weakness from the inside, so you don’t need to approach him with a polished version of yourself. The throne is called a throne of grace. Come boldly with your actual failures, and receive mercy and help at the moment you need it.", "q": ["What do I hesitate to bring to God?", "What help do I need from him right now?"], "p": "Jesus, I come with my need. Give me mercy and grace to help. Amen.", "k": "Love bade me welcome"},
+    {"ref": "Psalm 16:8", "theme": "Steadiness", "r": "I keep the Lord always before me, and because he is at my right hand, I will not be shaken. Steadiness comes from where you fix your attention. Try starting your next three tasks with one breath of awareness that he is with you.", "q": ["What tends to shake me during the day?", "How could I remember his presence before each task?"], "p": "Lord, keep my eyes on you so that I am not shaken. Amen.", "k": "trivial round"},
+    {"ref": "Psalm 30:5", "theme": "Joy", "r": "Weeping may last for the night, but joy comes with the morning. Nights are real, and the verse doesn’t hurry them. But it says they end. If you’re in a night, hold on to the possibility of morning. If you’re in the morning, remember someone who isn’t.", "q": ["Am I in a night or a morning right now?", "Who could I pray for who is in a long night?"], "p": "Lord, bring joy in the morning, and be near to those who weep. Amen.", "k": ""},
+    {"ref": "Nehemiah 8:10", "theme": "Joy", "r": "The joy of the Lord is your strength. This was said to people weeping as they heard the law read, and they were told to eat, drink and share with those who had nothing. Joy here is communal and practical. Who could you share something with today?", "q": ["What is one practical way to share joy today?", "Who could use a meal, a message or a gift?"], "p": "Lord, let your joy be my strength, and let me share it. Amen.", "k": "coat in your closet"},
+    {"ref": "Psalm 91:1-2", "theme": "Shelter", "r": "To dwell in the shelter of the Most High is a picture of staying, not visiting. Shelter isn’t escape from all harm. It’s a place to live in the middle of it. Make your home there today by returning to him whenever your mind drifts.", "q": ["When does my mind drift from God today?", "How could I return to him in those moments?"], "p": "Lord, you are my refuge and my fortress. I trust in you. Amen.", "k": "Christ be with me"},
+    {"ref": "Romans 8:38-39", "theme": "Love", "r": "Neither death nor life, nor anything else in all creation, can separate us from the love of God in Christ Jesus. The list is comprehensive on purpose. On the days you feel far from him, the distance isn’t on his side.", "q": ["What makes me feel far from God’s love?", "How does this verse answer that feeling?"], "p": "Lord, thank you that nothing can separate me from your love. Amen.", "k": "not my own"},
+    {"ref": "Ephesians 3:20-21", "theme": "Power", "r": "God is able to do far more than we ask or imagine, according to the power at work in us. Sometimes we pray small because we’ve been disappointed. Ask for something larger than usual today, and leave the outcome to him.", "q": ["What have I stopped asking for because I was disappointed?", "What bigger request could I bring to God today?"], "p": "Father, you can do more than I ask or imagine. Work in me and through me. Amen.", "k": "Give what you command"},
+    {"ref": "James 4:8", "theme": "Nearness", "r": "Draw near to God and he will draw near to you. The first step is small and it’s yours: a prayer, a page of Scripture, a moment of silence. He isn’t hard to find. What would drawing near look like in the next ten minutes?", "q": ["What small step could I take toward God today?", "What keeps me from taking it?"], "p": "Lord, I draw near to you. Draw near to me. Amen.", "k": "ear of your heart"},
+    {"ref": "Psalm 103:8-12", "theme": "Forgiveness", "r": "As far as the east is from the west, so far has he removed our transgressions from us. He doesn’t treat us as our sins deserve. If you’re carrying something God has forgiven, you may need to put it down. Ask him to help you believe you’re forgiven.", "q": ["What am I still carrying that God has forgiven?", "What would it mean to believe I’m forgiven?"], "p": "Lord, you are merciful and gracious. Help me receive your forgiveness. Amen.", "k": "Lighten our darkness"},
+    {"ref": "1 Corinthians 13:4-7", "theme": "Love", "r": "Read this as a description of how God loves you before you read it as a to-do list for loving others. Patient, kind, not keeping a record of wrongs. Then pick one phrase to practice today with someone who is difficult.", "q": ["Which phrase do I find hardest to live out?", "Who could I practice it with today?"], "p": "Lord, love me with your patience and teach me to love like you. Amen.", "k": "Love feels no burden"},
+    {"ref": "Psalm 73:26", "theme": "Strength", "r": "My flesh and my heart may fail, but God is the strength of my heart and my portion forever. This psalm begins in envy and confusion and ends here. Honest wrestling can lead to a firmer faith. What are you wrestling with that you can bring to him?", "q": ["What am I wrestling with?", "How can I bring it honestly to God?"], "p": "Lord, when my strength fails, be the strength of my heart. Amen.", "k": "reasons which reason does not know"},
+    {"ref": "Matthew 5:3-6", "theme": "Blessing", "r": "The Beatitudes turn our assumptions upside down: blessed are the poor in spirit, those who mourn, the meek, those who hunger for righteousness. They aren’t goals to achieve but descriptions of people God is near to. Which line do you find yourself in today?", "q": ["Which of these describes me right now?", "How does it feel to hear I’m blessed there?"], "p": "Lord, thank you for being near to the humble and the hungry. Amen.", "k": "poor as I am"},
+    {"ref": "Luke 10:38-42", "theme": "Attention", "r": "Martha was doing good things but was distracted and worried. Jesus doesn’t scold the serving. He points to the one thing needed, which is sitting at his feet. Where is busyness crowding out attention today? Take five minutes to sit before you serve.", "q": ["Where am I distracted by many things?", "What would it look like to sit at his feet for five minutes?"], "p": "Lord, quiet my busyness. Help me choose the one thing needed. Amen.", "k": "ear of your heart"},
+    {"ref": "Mark 1:35", "theme": "Solitude", "r": "Even the busiest person in history got up early to pray in a solitary place. If Jesus needed it, we do too. Find a few minutes today that could be yours and his, even if it isn’t early and the place isn’t quiet.", "q": ["When could I find a few minutes alone with God today?", "What might I say or hear in that time?"], "p": "Lord, help me make room to be alone with you. Amen.", "k": "your cell will teach"},
+    {"ref": "Psalm 42:1-2", "theme": "Thirst", "r": "A deer pants for streams of water, and the soul pants for God. Thirst is a gift that tells you what you’re made for. What have you been drinking to quench something that only he can satisfy?", "q": ["What am I using to fill a thirst only God can satisfy?", "What would it mean to come to him for it?"], "p": "Lord, my soul thirsts for you. Satisfy me. Amen.", "k": ""},
+    {"ref": "John 10:11", "theme": "Shepherd", "r": "The good shepherd lays down his life for the sheep. Notice the shape of it: not just guards them, but gives himself. That’s the measure of how you’re loved. When you doubt your worth, look at what was paid.", "q": ["When do I doubt that I’m loved?", "What does it mean that he gave his life for me?"], "p": "Good Shepherd, thank you for laying down your life for me. Amen.", "k": ""},
+    {"ref": "Romans 12:1-2", "theme": "Offering", "r": "Offer your bodies as a living sacrifice. It’s a physical, daily offering, not just a mental one. And don’t be conformed to this world. Be transformed by the renewing of your mind. What does offering your body look like in a day of ordinary tasks?", "q": ["What would it mean to offer today’s tasks to God?", "What pattern of the world do I need to resist?"], "p": "Lord, I offer you my body, my mind and my day. Amen.", "k": "liberty, my memory"},
+    {"ref": "Psalm 139:23-24", "theme": "Examine", "r": "Search me, God, and know my heart. It’s a bold prayer, and a safe one, because the one searching loves you. Ask him to show you anything hurtful in you, and to lead you in the way everlasting. Then be quiet and listen.", "q": ["What might God want to show me about myself?", "How can I listen for it today?"], "p": "Search me, O God, and lead me in the way everlasting. Amen.", "k": "all hearts be open"},
+    {"ref": "Isaiah 55:8-9", "theme": "Mystery", "r": "His thoughts aren’t ours, and his ways aren’t ours. That can sound distant, but it’s also comfort: God isn’t limited to our imagination or our analysis. When something doesn’t make sense, you don’t have to force an explanation. You can trust the one who sees more.", "q": ["What am I trying to explain that I could simply entrust to God?", "How does his greater wisdom comfort me?"], "p": "Lord, your ways are higher than mine. I trust you. Amen.", "k": "If you comprehend it"},
+    {"ref": "1 Corinthians 15:58", "theme": "Steadfast", "r": "Because of the resurrection, your labor in the Lord isn’t in vain. That’s Paul’s conclusion after a long argument. Nothing done for him is wasted. Stand firm in the task you’ve been given, and let the resurrection frame it.", "q": ["What work do I sometimes feel is wasted?", "How does the resurrection change how I see it?"], "p": "Lord, keep me steadfast, knowing my labor in you is not in vain. Amen.", "k": "become all flame"},
+    {"ref": "Matthew 5:14-16", "theme": "Light", "r": "You are the light of the world. Not “you should try to be,” but “you are.” A lamp doesn’t announce itself, it just shines. Let the good you do today be visible enough that someone might praise the Father.", "q": ["Where can my life point someone to God today?", "What good could I do quietly?"], "p": "Father, let my life shine so that others glorify you. Amen.", "k": "trivial round"},
+    {"ref": "Psalm 19:1-2", "theme": "Creation", "r": "The heavens declare the glory of God, day after day. Creation is speaking constantly, and we rarely listen. Step outside today for a minute. Look at something you didn’t make, and let it point you to the one who did.", "q": ["What in creation lifts my heart to God?", "When could I step outside for a minute today?"], "p": "Lord, the heavens declare your glory. Open my eyes to see it. Amen.", "k": ""},
+    {"ref": "Psalm 121:1-2", "theme": "Help", "r": "Where does my help come from? It comes from the Lord, who made heaven and earth. The one who keeps you doesn’t slumber. Tonight you can sleep because someone else is awake. Hand over what you can’t solve, and rest.", "q": ["What problem am I trying to solve alone?", "What would it mean to hand it to the one who never sleeps?"], "p": "Lord, my help comes from you. Keep me and mine. Amen.", "k": ""},
+    {"ref": "John 14:1-3", "theme": "Home", "r": "Do not let your hearts be troubled. Jesus says this on the night before his arrest, and then he promises to prepare a place for us. Troubled hearts are often asking, where will I end up? He says he’s preparing a home and will return. Take comfort that your story ends with him.", "q": ["What is troubling my heart today?", "What does it mean that he is preparing a place for me?"], "p": "Lord Jesus, you are preparing a home for me. Calm my heart. Amen.", "k": "chief end"}
+  ];
+  var DEV_START = '2026-09-20', DEV_LAST = '', DEV_DATED = {}, DEV_EVER = [], DEV_SUN = [];
+  DEVOS.forEach(function (e) {
+    if (e.d) { DEV_DATED[e.d] = e; if (e.d > DEV_LAST) DEV_LAST = e.d; if (e.s) DEV_SUN.push(e); }
+    else DEV_EVER.push(e);
+  });
+  function findQuote(key) {
+    if (!key) return null;
+    for (var i = 0; i < QUOTES.length; i++) if (QUOTES[i].text.indexOf(key) !== -1) return QUOTES[i];
+    return null;
+  }
+  function todaysDevotional() {
+    var t = dkey(), n = new Date();
+    if (DEV_DATED[t]) return DEV_DATED[t];
+    if (t >= DEV_START && t <= DEV_LAST) {
+      var idx = 0, d = new Date(2026, 8, 20);
+      for (var g = 0; g < 400 && dkey(d) < t; g++) { if (!DEV_DATED[dkey(d)]) idx++; d.setDate(d.getDate() + 1); }
+      return DEV_EVER[idx % DEV_EVER.length];
+    }
+    var dayNum = Math.floor(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) / 86400000);
+    if (n.getDay() === 0 && DEV_SUN.length) return DEV_SUN[Math.floor(dayNum / 7) % DEV_SUN.length];
+    return DEV_EVER[dayNum % DEV_EVER.length];
+  }
+  function morningCard() {
+    var e = todaysDevotional(), t = dkey(), open = ui.devOpen === t;
+    var q = findQuote(e.k), read = !!(S.devRead && S.devRead[t]);
+    var h = '<section class="card verse" aria-label="Today\u2019s devotional">' + partTabs('morning') + '<div class="row"><p class="small">Today\u2019s devotional</p><span>' +
+      (e.se ? '<span class="pill due">' + esc(e.se) + '</span> ' : '') + '<span class="pill">' + esc(e.theme) + '</span></span></div>' +
+      '<p class="verse-ref">' + esc(e.ref) + '</p>' + passageBox(e.ref, true);
+    if (open) {
+      h += '<div class="dev-body"><p class="small">Reflection</p><p class="dev-text">' + esc(e.r) + '</p>' +
+        '<p class="small">Ask yourself</p><ul class="prompts">' + e.q.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' +
+        '<p class="small" style="margin-top:14px">Pray</p><p class="dev-prayer">' + esc(e.p) + '</p>';
+      if (q) {
+        h += '<div class="dev-quote"><p class="small">From the tradition</p><p class="dev-qtext">\u201c' + esc(q.text) + '\u201d</p>' +
+          '<p class="quote-by">' + esc(q.by) + '</p><p class="small">' + esc(q.src) + '</p></div>';
+      }
+      h += '</div>';
+    }
+    h += '<div class="actions"><button class="btn small ' + (open ? 'quiet' : 'primary') + '" data-act="devtoggle">' + (open ? 'Hide reflection' : 'Read today\u2019s reflection') + '</button>' +
+      '<button class="btn small quiet" data-act="deventry">Write about it</button>' +
+      (open ? '<button class="btn small ' + (read ? 'on' : 'quiet') + '" data-act="devread" aria-pressed="' + read + '">' + (read ? 'Read' : 'Mark as read') + '</button>' : '') + '</div></section>';
+    return h;
+  }
+
+  var EVENING = {
+    "09-21": {
+      "ref": "Psalm 26:9",
+      "r": "David prayed this out of fear that he might be gathered with the wicked at the end. That fear comes from holy anxiety: past sin, present unfruitfulness, future weakness. But if you share David’s two marks, walking in integrity and trusting the Lord, you need not be afraid. At the judgment, like is gathered with like: the tares are bound to burn, the wheat is gathered into the barn. If you are like God’s people, you will be with them. You were bought with Christ’s blood, and where he is, his people will be. Trust your Surety and do not fear."
+    },
+    "09-22": {
+      "ref": "Psalm 61:2",
+      "r": "Most of us know what it is to have the heart overwhelmed, whether by discovering our inward corruption or by heartbreak that rolls over us wave after wave. At such times God is the harbour for storm-beaten sails. He is higher than we are: his mercy is higher than our sins, his love higher than our thoughts. He is a Rock because he does not change, and a high Rock because the storms roll far beneath his feet. Shelter under him and the hurricane loses its power. But a troubled mind needs piloting to that shelter, so we pray, “Lead me.” Only he can steer us safely in. Tonight, deal well with your servants."
+    },
+    "09-23": {
+      "ref": "Mark 9:23",
+      "r": "A father brought his afflicted son to Jesus, and since the disciples had failed, he asked, “If you can do anything, help us.” Jesus did not tell him to withdraw the “if.” He put it where it belonged: “If you can believe, all things are possible.” We often see that there is an “if” somewhere, but we put it in the wrong place, doubting Christ’s power or his willingness when the “if” belongs to our believing. Faith stands in God’s power and shares his might, and to the one who believes, all things are possible. My soul, can you believe your Lord tonight?"
+    },
+    "09-24": {
+      "ref": "Song of Solomon 5:2",
+      "r": "“I sleep, but my heart wakes” is one of the paradoxes of Christian experience, and it has two halves. First, a mournful sleepiness: sin can make us slack in duty, dull in joy and careless, which is shameful and dangerous with a perishing world around us and eternity near. Even wise virgins slumber, so it is time to shake it off. Second, a hopeful wakefulness: life is not extinct, and a heart that struggles against heaviness is a gift of grace. Jesus hears the waking heart, and its voice is really his, saying, “Open to me.” Holy zeal will unbar the door."
+    },
+    "09-25": {
+      "ref": "1 Corinthians 1:30",
+      "r": "The human mind looks for rest apart from Christ. Educated people, even when converted, are tempted to leave the simple Christ crucified for a more “intellectual” doctrine, as the early churches did when they fell into heresy. Whoever you are, you will find no rest in philosophizing divinity. Reason at its best finds only the alphabet of truth, while in Christ is stored all wisdom and knowledge. Come back to the plain reality that delights the ploughboy and the poor: Christ Jesus came into the world to save sinners. He satisfies the highest mind when he is received by faith, but apart from him the mind finds no rest."
+    },
+    "09-26": {
+      "ref": "Zechariah 11:2",
+      "r": "When an oak crashes in the forest, every tree may tremble, since the woodman is near. We are all trees marked for the axe, and each death reminds us that our own hour is drawing near. Let us not grow callous by hearing of death, like birds that nest in a steeple while the bell tolls. Death is the weightiest of events, our eternal destiny hangs on a thread, and not to prepare is madness. Be ready, servant of Christ, and faithful in his work. Parents, bring up your children in the fear of God. Men and women of business, keep your affairs in order. So that you may hear, “Well done, good and faithful servant.”"
+    },
+    "09-27": {
+      "ref": "Song of Solomon 5:4",
+      "r": "Knocking was not enough, for my heart was too full of sleep and too cold to rise. But his own hand, put in through the opening of the door, has stirred me. How patient he was to wait, shut out, while I lay on the bed of sloth, and how kind that he unbars the door himself. Nothing but his power could save one so wicked; ordinances and even the gospel fail until his hand is stretched out. Now I feel his presence, and my heart breaks that I let my affections wander and set up rivals. Kiss away my tears, purge my heart, and bind it to yourself with sevenfold cords, never to wander again."
+    },
+    "09-28": {
+      "ref": "1 Kings 18:43",
+      "r": "Success is certain when the Lord has promised it. You may have pleaded month after month without an answer, but the Lord cannot be deaf when his people are earnest in a matter that touches his glory. Elijah kept wrestling on Carmel, and each time the servant returned, the word was only, “Go again.” Faith sends hope to look again and again, and disappointment only makes it plead more fervently. Delays set the heart searching itself and lead to contrition. The danger is to faint and miss the blessing. At last the little cloud appeared. Elijah was a man like us, so if his prayer prevailed, why not yours? Plead the precious blood, and keep pleading."
+    },
+    "09-29": {
+      "ref": "Song of Solomon 3:4",
+      "r": "Does Christ receive us in spite of all our past sin, never scolding us for trying every other refuge first? Then let us praise him. Down with our idols, up with the Lord Jesus, and let the cross the world scorns be lifted high. How precious Christ is, and how strange that I have thought so little of him. Make a covenant with your heart never to depart from him, and ask him to seal it. As the sparrow finds a house at God’s altars, I would make my nest in him, my home and my only rest."
+    },
+    "09-30": {
+      "ref": "Ecclesiastes 9:4",
+      "r": "Life is precious, and even in its humblest form it is better than death. It is so in spiritual things: the least in the kingdom is better than the greatest outside it, because life given by the Holy Spirit is beyond anything education can produce. The thief on the cross outranks Caesar on his throne. In the same way a living, loving gospel sermon, however rough, is better than a polished one with no power. Our prayers are the same: when quickened by the Spirit they are accepted through Christ, but our grand performances without the heart are carrion before the living God. Better anything than death. Quicken us, O Lord."
+    },
+    "10-01": {
+      "ref": "Psalm 84:11",
+      "r": "God is bountiful by nature, and giving is his delight. He gives grace freely: to the elect because he wills it, to the redeemed by covenant, to the called by promise, to believers who seek it, to sinners who need it, abundantly and constantly. Sickness, poverty and death may come, but grace will meet us in each. And the little word “and” binds present grace to future glory; God has joined them and no one can divorce them. Glory is only grace in its Sabbath dress, grace in full bloom. How soon it comes, no one can tell, perhaps before this month is over. Those who own grace shall gain glory."
+    },
+    "10-02": {
+      "ref": "Daniel 10:11",
+      "r": "Child of God, do you hesitate to take the name “greatly beloved”? You were bought with Christ’s precious blood, and God gave his own Son for you. He bore patiently with your sin, called you by grace, and made you his child and heir. Every path since, rough or smooth, is proof of it. If he has chastened you, it was not in anger; if he has made you poor, you have been rich in grace. The more unworthy you feel, the clearer the evidence that only love could have saved you. So use your privilege and come boldly, for he who did not spare his own Son will surely give all things with him. Go to your bed in peace."
+    },
+    "10-03": {
+      "ref": "Hebrews 2:18",
+      "r": "It is a common thought, yet it tastes like nectar to the weary: Jesus was tempted as I am, even to the same sins. The dark room you are passing through, he passed through first, and the enemy you fight, he faced foot to foot. Sweeter still, he never sinned, so it is not necessary for you to sin. There is no sin in being tempted, only in yielding. He triumphed, and since the Head has won, the members share the victory. Perhaps you are tempted now to drive you nearer to him. Blessed is any wind that blows us into the port of his love! Come to your tempted Saviour, who feels your weakness and helps every tried one."
+    },
+    "10-04": {
+      "ref": "1 John 2:1",
+      "r": "“We have an advocate,” even though we sin. John does not say we lose him. No sin a believer can commit destroys his interest in Christ as his advocate. The name is telling. Jesus, whose business and delight is to save. Christ, the anointed, so he is authorized and qualified to plead and to move the Father’s heart. The righteous, which is both his character and his plea, since he answers the charge against us with his own righteousness, counted as ours. My soul, you have a friend fitted to be your advocate, who cannot fail. Leave yourself entirely in his hands."
+    },
+    "10-05": {
+      "ref": "Mark 16:16",
+      "r": "When the islanders of St Kilda were asked how a person is saved, each added something: repentance, a true heart, prayer, diligence in the commandments. They thought they had built a decent creed, and they stirred the preacher’s deepest pity. The carnal mind always maps out a way in which self can work and grow great, while the Lord’s way is the opposite. Believing and being baptized are so simple that boasting is shut out. If you are unsaved, why? Is the way doubtful, when God has pledged his word? Is it too easy, which only leaves you without excuse? To believe is to trust and rely on Christ. Baptism pictures our death, burial and resurrection with him; it does not save, yet it is not to be neglected. Do you believe? Then dismiss your fears. If not, there is only one door."
+    },
+    "10-06": {
+      "ref": "Numbers 12:1",
+      "r": "It was a strange choice of Moses, but stranger still is the choice of the greater Prophet, fair as the lily, who has married one who confesses herself dark. It amazes angels that Jesus’ love is set on poor, guilty people, and each believer should be astonished too. He found the cause of his love in his own heart, not in us. Even since our conversion we have been dark, though grace has made us comely. Rutherford said Christ is the Physician he needs and admitted how often he plays fast and loose with him, while Christ agrees with him twenty times a day. Tender Husband, finish conforming us to your image. Moses was opposed for his marriage, and so are Jesus and his bride, especially when great sinners are converted: “This man receives sinners.”"
+    },
+    "10-07": {
+      "ref": "Isaiah 36:5",
+      "r": "“On whom do you trust?” is an important question. The Christian answers: a triune God. I trust the Father, who chose me, provides for me, teaches and corrects me, and will bring me home. I trust the Son, God and man, to take away my sins by his sacrifice, clothe me with his righteousness, and be my Intercessor and Advocate at the last day. I trust the Holy Spirit, who has begun to save me from sin, to drive it out, to curb my temper, to comfort and enlighten me, and to take me to dwell with the saints in light. His power is never exhausted, his love never wanes, and his wisdom is never baffled. Happy are you if this is your trust, with peace now and glory hereafter."
+    },
+    "10-08": {
+      "ref": "Jude 1:20",
+      "r": "The mark of true prayer is that it is “in the Holy Spirit.” It must come from heaven’s storehouse, for only prayer that comes from God goes to God; we shoot the Lord’s arrows back to him. It is fervent, for lukewarm prayer is as strange as lukewarm fire. It is persevering, growing stronger when God delays. It is humble, since the Spirit brings contrition, and we must cry out of the depths before we can sing glory in the highest. It is loving, perfumed with love for the saints and for Christ. And it is full of faith, which the Spirit himself strengthens. Blessed Comforter, help our weakness in prayer."
+    },
+    "10-09": {
+      "ref": "Matthew 15:23",
+      "r": "Seekers who have not yet received the blessing can take comfort here. Christ did not answer the woman a word, though her prayer was good, her need great, her earnestness intense and her faith so strong that Jesus marvelled. Faith brings peace, but not always at once, and there may be reasons for the trial of faith before its reward. Some are turned from darkness to light in a moment, like the jailer; others are plants of slower growth. A deeper sense of sin may come to you instead of a sense of pardon, and you will need patience. Even if Christ seems to beat and bruise you, trust him, and believe in his heart of love through an angry word. Do not give up seeking my Master."
+    },
+    "10-10": {
+      "ref": "Jeremiah 15:21",
+      "r": "Notice the glorious personal promise: “I will, I will.” The Lord himself steps in to deliver and redeem. Nothing is said of our effort, our strength or weakness, or of helpers and means. So why do we tally up our forces? Vain are all our glances at friends and relatives; they are broken reeds if we lean on them. When the promise comes from God alone, wait on him alone, and our expectation will not fail. Who are the wicked, that we should fear them? They are to be pitied. If we hold fast our integrity, tyrants’ rage will be overruled for our good. As the fish found Jonah a morsel it could not digest, the world is glad to be rid of the church it devours. In every fiery trial, in patience possess your souls."
+    },
+    "10-11": {
+      "ref": "Romans 8:30",
+      "r": "Test your calling. Is it holy (2 Timothy 1:9)? It leads us away from trusting our works and purges us from dead works to serve the living God; if you live in sin, you are not called. Is it high (Philippians 3:14)? Has it lifted your hopes, tastes and desires, and how you spend your life for God? Is it heavenly (Hebrews 3:1), a call from heaven and to heaven? If only man called you, you are uncalled. Those so called are strangers and pilgrims on the earth, looking for the city whose builder and maker is God. If your calling is holy, high and heavenly, then you have been called of God."
+    },
+    "10-12": {
+      "ref": "John 14:26",
+      "r": "This age is the age of the Holy Spirit, who cheers us not by Christ’s personal presence but by his abiding within, as the church’s Comforter. He convinces of sin and instructs, but chiefly makes glad the hearts of the renewed, by revealing Jesus. The Spirit is the Physician, Jesus the medicine; the Spirit is the Comforter, Jesus the Comfort. With such provision, why should a believer be despondent? The Spirit has engaged to comfort you, and he will not forget his business. Do not think so hardly of the tender Spirit. He delights to give the oil of joy for mourning, until the house of mourning is closed and the marriage feast begins."
+    },
+    "10-13": {
+      "ref": "Song of Solomon 8:6",
+      "r": "Whose love is as strong as death? Not my weak love, which can hardly endure a scoffing jest, but the love of Jesus, stronger than the most terrible death. His death was lingering, shameful, penal and forsaken, yet love survived the torment, despised the shame, bore our iniquities and endured the curse. Have I no feeling at such love? Lord, I long to feel your love burning like a furnace in me, and to have a thousand lives to give. Why should I despair of loving as strongly? He deserves it and I desire it. The martyrs, flesh and blood like me, felt it by grace, and the same grace is for me. Shed abroad that love in my heart tonight."
+    },
+    "10-14": {
+      "ref": "Romans 12:2",
+      "r": "If a Christian can be saved while conforming to the world, it must be as by fire, a salvation almost as much to be dreaded as desired. Would you want a heaven below as well as above, to know the love of Christ and to have an abundant entrance into your Lord’s joy? Then come out and be separate. You cannot gain full assurance while keeping company with sinners, nor burn with love while drenched by godless society, nor become a full-grown Christian while yielding to worldly maxims. Even small inconsistencies do harm: little thorns make great blisters, and little moths ruin fine garments. For your comfort and your growth, if you are a Christian, be a marked and distinct one."
+    },
+    "10-15": {
+      "ref": "Exodus 34:20",
+      "r": "Every firstborn belonged to the Lord, but the unclean donkey could not be sacrificed, and God makes no exceptions. The only way out was redemption: a lamb must take its place, or the donkey must die. My soul, that unclean animal is you. You belong to the Lord who made you, yet you are so sinful that he cannot accept you, and the Lamb of God must stand in your place or you must die. Is there any comparison between the value of a soul and the life of the Lord Jesus? Yet the Lamb dies and the donkey is spared. Worms are bought with the blood of the Son of the Highest. Inestimably dear is the Lamb who redeemed us from such a doom."
+    },
+    "10-16": {
+      "ref": "Psalm 36:9",
+      "r": "There are times when human counsel, sympathy or religious ordinances fail to comfort us. Why does God allow this? Perhaps we have been living too much without him, and he removes what we depended on to drive us to himself. While our water-skins are full, like Hagar we are content to go into the wilderness; when they are dry, nothing serves but “You are the God who sees me.” Anything becomes an idol when it keeps us from God, even the bronze serpent, Nehushtan. The prodigal was never safer than when he was driven to his father’s arms. The best place is living directly on God’s grace, never trusting our sanctification or our feelings, but resting on Christ’s full atonement, for we are complete in him. Thirst brings us eagerly to the fountain of life."
+    },
+    "10-17": {
+      "ref": "Isaiah 40:11",
+      "r": "The good Shepherd’s flock has many kinds of experience, strong and weak, but he is impartial in his care, and the weakest lamb is as dear to him as the most advanced. Lambs lag behind, wander and grow weary, and he protects them with his arm. He nourishes new-born souls, consoles weak minds ready to faint, and gathers every little one, for it is not the Father’s will that any should perish. What a quick eye, a tender heart and a far-reaching arm! How gently he gathered me to himself, to his truth, his blood, his love and his church, and how often he has restored me from wandering, doing it all personally. How shall I love him enough? Great Shepherd, add this to your mercies: a heart to love you more truly."
+    },
+    "10-18": {
+      "ref": "1 Samuel 15:22",
+      "r": "Saul was told to destroy the Amalekites and their cattle, but he spared the king and the best of the flocks, claiming he meant to sacrifice to God. Samuel answered that sacrifice is no excuse for rebellion. This sentence deserves to be printed in gold before a generation fond of self-made worship and careless of God’s laws. To keep strictly to your Saviour’s command is better than any outward form of religion. If you are failing in the least of Christ’s commands, be disobedient no longer. Ceremony, however grand, is no payment for disobedience; even giving your body to be burned profits nothing if you ignore the Lord’s precepts. Be teachable as a child, and better still, carry out the lesson. Many adorn their temples yet refuse to obey. My soul, do not join their secret."
+    },
+    "10-19": {
+      "ref": "Job 35:10",
+      "r": "Anyone can sing in the day. When the cup is full and wealth abounds, it is easy to praise God. A harp whispers music when the wind blows; the difficulty is to sing when no wind stirs, from the heart, in the dark. No one can make a night-song alone. It must be divinely inspired. Put me in a desert where nothing green grows, or silence my tongue on a sickbed, and how shall I praise unless he himself gives the song? Habakkuk sang divinely in the night: though the fig tree does not blossom and the herd is gone, yet I will rejoice in the Lord. Since our Maker gives songs in the night, let us wait on him for the music, and tune our lips to thanksgiving."
+    },
+    "10-20": {
+      "ref": "Isaiah 43:6",
+      "r": "“Keep not back.” Though spoken to Israel, it is a summons to us. We are naturally backward in good, and grace teaches us to go forward. If you are unconverted and long to trust Jesus, keep not back: love invites you, the promises secure you, and the blood prepares the way. If you long to pray, keep not back: the mercy seat is for those who need mercy. If you are saved, keep not back from union with God’s people or from baptism and the Lord’s Supper, however timid you are. Keep not back from using your talents, your wealth and your time, from close communion with God, or from advancing in the divine life. Do not keep others back by coldness or suspicion. Unbelief and superstition are forward to the fight. Soldiers of the cross, keep not back."
+    }
+  };
+  function todaysEvening() { return EVENING[dkey().slice(5)] || null; }
+  function currentPart() { return ui.partManual ? ui.part : (new Date().getHours() >= 17 ? 'evening' : 'morning'); }
+  function partTabs(part) {
+    return '<div class="parttabs" role="group" aria-label="Morning or evening">' + [['morning', 'Morning'], ['evening', 'Evening']].map(function (x) {
+      return '<button class="parttab' + (part === x[0] ? ' on' : '') + '" data-act="part" data-id="' + x[0] + '" aria-pressed="' + (part === x[0]) + '">' + x[1] + '</button>';
+    }).join('') + '</div>';
+  }
+  function eveCard() {
+    var t = dkey(), e = todaysEvening(), open = ui.eveOpen === t, read = !!(S.eveRead && S.eveRead[t]);
+    var h = '<section class="card verse" aria-label="Tonight\u2019s reading">' + partTabs('evening');
+    if (!e) {
+      return h + '<p class="small">Evening reading</p><p style="margin-top:6px">There is no evening reading for today yet. Spurgeon\u2019s evenings are built into the app through October 20, and more will be added.</p></section>';
+    }
+    var label = new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
+    h += '<div class="row"><p class="small">Tonight\u2019s reading</p><span class="pill">Spurgeon</span></div>' +
+      '<p class="verse-ref">' + esc(e.ref) + '</p>' + passageBox(e.ref, true);
+    if (open) {
+      h += '<div class="dev-body"><p class="small">Reading</p><p class="dev-text">' + esc(e.r) + '</p>' +
+        '<p class="small" style="margin-top:14px">A modern rendering of Spurgeon\u2019s evening reading for ' + esc(label) + ', from <i>Morning and Evening</i> (1866).</p>' +
+        '<p class="small"><a href="https://ccel.org/s/spurgeon/morn_eve/ME' + t.slice(5, 7) + 'PM.html" target="_blank" rel="noopener noreferrer">Read Spurgeon\u2019s original</a></p></div>';
+    }
+    h += '<div class="actions"><button class="btn small ' + (open ? 'quiet' : 'primary') + '" data-act="evetoggle">' + (open ? 'Hide reading' : 'Read tonight\u2019s reading') + '</button>' +
+      '<button class="btn small quiet" data-act="eveentry">Write about it</button>' +
+      (open ? '<button class="btn small ' + (read ? 'on' : 'quiet') + '" data-act="everead" aria-pressed="' + read + '">' + (read ? 'Read' : 'Mark as read') + '</button>' : '') + '</div></section>';
+    return h;
+  }
+  function devCard() { return currentPart() === 'evening' ? eveCard() : morningCard(); }
+
+  /* ---------- verse of the day ---------- */
+  function todaysVerse() {
+    var n = new Date(), t = dkey(n);
+    if (!S.verse || S.verse.day !== t) S.verse = { day: t, offset: 0 };
+    var dayNum = Math.floor(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) / 86400000);
+    return VERSES[(dayNum + S.verse.offset) % VERSES.length];
+  }
+  function verseCard() {
+    var v = todaysVerse();
+    return '<section class="card verse" aria-label="Verse of the day"><p class="small">Verse of the day</p>' +
+      '<p class="verse-ref">' + esc(v.ref) + '</p><p class="small">Theme: ' + esc(v.theme) + '</p>' +
+      passageBox(v.ref, true) +
+      '<div class="actions"><button class="btn small quiet" data-act="verseentry">Write about it</button>' +
+      '<button class="btn small quiet" data-act="newverse">Another verse</button></div></section>';
+  }
+
+  function todaysQuote() {
+    var n = new Date(), t = dkey(n);
+    if (!S.quote || S.quote.day !== t) S.quote = { day: t, offset: 0 };
+    var dayNum = Math.floor(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) / 86400000);
+    return QUOTES[(dayNum + S.quote.offset) % QUOTES.length];
+  }
+  function quoteCard() {
+    var q = todaysQuote();
+    return '<section class="card quote" aria-label="Quote of the day"><div class="row"><p class="small">Quote of the day</p><span class="pill">' + esc(q.era) + '</span></div>' +
+      '<blockquote>\u201c' + esc(q.text) + '\u201d</blockquote>' +
+      '<p class="quote-by">' + esc(q.by) + '</p><p class="small">' + esc(q.src) + '</p>' +
+      '<p class="small" style="margin-top:8px">Wording varies by translation.</p>' +
+      '<div class="actions"><button class="btn small quiet" data-act="quoteentry">Write about it</button>' +
+      '<button class="btn small quiet" data-act="newquote">Another quote</button></div></section>';
+  }
+
+  /* ---------- views ---------- */
+  var CHECK_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  function shortLabel(l) { return String(l).replace(/\s+prayer$/i, '') || l; }
+
+  function viewToday() {
+    var now = new Date(), mins = now.getHours() * 60 + now.getMinutes();
+    var slots = S.slots.slice().sort(byTime);
+    var enabled = slots.filter(function (s) { return s.on; });
+    var overdue = slots.filter(function (s) { return s.on && toMin(s.time) <= mins && !isDone(s.id); });
+    var next = slots.filter(function (s) { return s.on && toMin(s.time) > mins && !isDone(s.id); })[0];
+    var doneCount = enabled.filter(function (s) { return isDone(s.id); }).length;
+    var status = '';
+    if (enabled.length) {
+      if (doneCount === enabled.length) status = 'All of today\u2019s prayers are done.';
+      else {
+        status = doneCount + ' of ' + enabled.length + ' prayers done.';
+        if (!overdue.length && next) status += ' Next: ' + esc(next.label) + ', ' + fmt(next.time) + '.';
+      }
+    }
+    var h = '<header><h1>' + esc(now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })) + '</h1>';
+    h += '<p class="sub">' + status + '</p></header>';
+    if (overdue.length) {
+      h += '<div class="banner" role="status"><p>' + esc(overdue[0].label) + ' was set for ' + fmt(overdue[0].time) + '.</p>' +
+        '<button class="btn small primary" data-act="slot" data-id="' + overdue[0].id + '">Mark prayed</button></div>';
+    }
+    if (slots.length) {
+      var st = streak();
+      h += '<div class="card dayrow" role="group" aria-label="Today\u2019s prayer times"><div class="slotrow">' + slots.map(function (sl) {
+        var d = isDone(sl.id), over = overdue.indexOf(sl) !== -1;
+        return '<button class="slotbtn' + (d ? ' done' : '') + (over ? ' over' : '') + (sl.on ? '' : ' off') + '" data-act="slot" data-id="' + sl.id + '" aria-pressed="' + d + '" aria-label="' + esc(sl.label) + ' at ' + fmt(sl.time) + '">' +
+          '<span class="slotcircle">' + (d ? CHECK_SVG : '') + '</span><span class="slotname">' + esc(shortLabel(sl.label)) + '</span><span class="slottime">' + fmt(sl.time) + '</span></button>';
+      }).join('') + '</div><p class="small streakline">' + (st > 0 ? st + (st === 1 ? ' day' : ' days') + ' in a row' : 'Tap a time when you\u2019ve prayed') + '</p></div>';
+    } else {
+      h += '<p class="empty">No prayer times yet. Add some under Times.</p>';
+    }
+    h += devCard();
+    h += '<div class="actions"><button class="btn ghost" data-act="tab" data-id="pray">Guide me in prayer</button></div>';
+    if (now.getDay() === 0) {
+      h += '<div class="card row" style="margin-top:14px"><div class="grow"><p class="slot-label">Review your week</p><p class="small">See how the week went and write a short reflection.</p></div>' +
+        '<button class="btn small primary" data-act="tab" data-id="week">Open</button></div>';
+    }
+    var open = S.requests.filter(function (r) { return !r.answered; });
+    open.sort(function (a, b) {
+      var pa = prayedToday(a) ? 1 : 0, pb = prayedToday(b) ? 1 : 0;
+      if (pa !== pb) return pa - pb;
+      return lastPrayed(a) < lastPrayed(b) ? -1 : lastPrayed(a) > lastPrayed(b) ? 1 : 0;
+    });
+    var prayedN = open.filter(prayedToday).length;
+    h += '<section class="section"><div class="row"><h2 style="margin:0">Pray through</h2>' + (open.length ? '<span class="small">' + prayedN + ' of ' + open.length + ' prayed</span>' : '') + '</div>';
+    if (!open.length) {
+      h += '<p class="empty">Add prayer requests and they\u2019ll show up here to pray through.</p>';
+    } else {
+      h += '<div class="card list" style="margin-top:10px">' + open.slice(0, 3).map(function (r) {
+        var p = prayedToday(r);
+        return '<div class="lrow"><span class="lr-text">' + esc(r.text) + '</span><button class="btn small ' + (p ? 'on' : 'quiet') + '" data-act="pray" data-id="' + r.id + '" aria-pressed="' + p + '">' + (p ? 'Prayed' : 'Prayed today') + '</button></div>';
+      }).join('') + '</div>';
+      if (open.length > 3) h += '<div class="actions"><button class="btn ghost small" data-act="tab" data-id="requests">See all ' + open.length + ' requests</button></div>';
+    }
+    h += '</section>';
+    return h;
+  }
+
+  function weekDays(off) {
+    var n = new Date(); n.setHours(12, 0, 0, 0);
+    var start = new Date(n); start.setDate(n.getDate() - ((n.getDay() + 6) % 7) + off * 7);
+    var days = [];
+    for (var i = 0; i < 7; i++) { var d = new Date(start); d.setDate(start.getDate() + i); days.push(d); }
+    return days;
+  }
+  function weekLabel(d) { return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }); }
+  function weekStats(off) {
+    var days = weekDays(off), keys = days.map(function (d) { return dkey(d); }), today = dkey();
+    var first = keys[0], last = keys[6];
+    var enabled = S.slots.filter(function (s) { return s.on; }).length || S.slots.length;
+    var counted = 0, total = 0, prayedDays = 0;
+    var per = keys.map(function (k) {
+      var n = Object.keys(S.done[k] || {}).length, future = k > today;
+      if (!future) counted++;
+      total += n; if (n > 0) prayedDays++;
+      return { key: k, n: n, future: future, today: k === today };
+    });
+    var inRange = function (k) { return k >= first && k <= last; };
+    return {
+      days: days, per: per, first: first, last: last, counted: counted, prayerTotal: total, prayerMax: enabled * counted, prayedDays: prayedDays,
+      requestsPrayed: S.requests.filter(function (r) { return (r.prayed || []).some(inRange); }).length,
+      answered: S.requests.filter(function (r) { return r.answered && inRange(r.answered.date); }),
+      devos: Object.keys(S.devRead || {}).filter(inRange).length + Object.keys(S.eveRead || {}).filter(inRange).length,
+      entries: S.journal.filter(function (e) { return inRange(dkey(new Date(e.date))); }).length
+    };
+  }
+  function viewWeek() {
+    var off = ui.weekOffset || 0, w = weekStats(off);
+    var title = off === 0 ? 'Your week' : off === -1 ? 'Last week' : 'Week of ' + weekLabel(w.days[0]);
+    var h = '<header><h1>' + esc(title) + '</h1><p class="sub">' + esc(weekLabel(w.days[0])) + ' to ' + esc(weekLabel(w.days[6])) + '</p></header>';
+    h += '<div class="card" style="margin-top:16px"><div class="weekrow">' + w.per.map(function (p, i) {
+      return '<div class="weekday"><span class="wcircle' + (p.n > 0 ? ' on' : '') + (p.today ? ' today' : '') + (p.future ? ' future' : '') + '">' + (p.n > 0 ? p.n : '') + '</span>' +
+        esc(w.days[i].toLocaleDateString(undefined, { weekday: 'short' })) + '</div>';
+    }).join('') + '</div><p class="small" style="text-align:center;margin-top:10px">Numbers show prayer times completed each day</p></div>';
+    var stat = function (v, l) { return '<div class="stat"><b>' + v + '</b><span>' + l + '</span></div>'; };
+    h += '<div class="stats">' +
+      stat(w.prayedDays + ' of ' + w.counted, 'Days you prayed') +
+      stat(w.prayerTotal + ' of ' + w.prayerMax, 'Prayer times') +
+      stat(w.requestsPrayed, 'Requests prayed for') +
+      stat(w.answered.length, 'Answered') +
+      stat(w.devos, 'Devotionals read') +
+      stat(w.entries, 'Journal entries') + '</div>';
+    if (w.answered.length) {
+      h += '<section class="section"><h2>Answered this week</h2><ul class="rows">' + w.answered.map(function (r) {
+        return '<li class="card"><p class="req-text">' + esc(r.text) + '</p>' + (r.answered.note ? '<div class="answered-note">' + esc(r.answered.note) + '</div>' : '') + '</li>';
+      }).join('') + '</ul></section>';
+    }
+    h += '<section class="section"><h2>Reflect on your week</h2><div class="card"><ul class="prompts" style="margin-top:0">' +
+      '<li>Where did I see God at work this week?</li><li>What am I thankful for?</li><li>What will I carry into next week?</li></ul>' +
+      '<div class="actions"><button class="btn" data-act="weekentry">Write my review</button></div></div>' +
+      '<div class="actions"><button class="btn quiet small" data-act="weekprev">Previous week</button>' +
+      (off < 0 ? '<button class="btn quiet small" data-act="weeknext">Next week</button>' : '') + '</div></section>';
+    return h;
+  }
+
+  function viewRequests() {
+    var open = S.requests.filter(function (r) { return !r.answered; });
+    var ans = S.requests.filter(function (r) { return !!r.answered; });
+    var h = '<header><h1>Requests</h1><p class="sub">People and things you\u2019re praying for.</p></header>';
+    h += '<div class="card" style="margin-top:18px"><label class="field" for="reqText" style="margin-top:0">New request</label>' +
+      '<input type="text" id="reqText" maxlength="300" data-enter="addreq" placeholder="Who or what are you praying for?">' +
+      '<div class="form-row"><select id="reqCat" aria-label="Category">' + CATS.map(function (c) { return '<option>' + c + '</option>'; }).join('') + '</select>' +
+      '<button class="btn" data-act="addreq" style="flex:1">Add request</button></div></div>';
+    h += '<div class="chips" role="group" aria-label="Filter">' +
+      '<button class="chip" data-act="filter" data-id="open" aria-pressed="' + (ui.filter === 'open') + '">Open (' + open.length + ')</button>' +
+      '<button class="chip" data-act="filter" data-id="answered" aria-pressed="' + (ui.filter === 'answered') + '">Answered (' + ans.length + ')</button></div>';
+    var list = ui.filter === 'open' ? open.slice().reverse() : ans.slice().sort(function (a, b) { return a.answered.date < b.answered.date ? 1 : -1; });
+    if (!list.length) {
+      h += '<p class="empty">' + (ui.filter === 'open' ? 'No open requests. Add one above.' : 'Answered prayers will be kept here.') + '</p>';
+    } else {
+      h += '<ul class="rows">';
+      list.forEach(function (r) {
+        var n = (r.prayed || []).length, p = prayedToday(r);
+        var ed = ui.editing && ui.editing.kind === 'req' && ui.editing.id === r.id ? ui.editing : null;
+        if (ed) {
+          var cats = ed.d.cat && CATS.indexOf(ed.d.cat) === -1 ? CATS.concat([ed.d.cat]) : CATS;
+          h += '<li class="card"><label class="field" for="editReqText" style="margin-top:0">Edit request</label>' +
+            '<input type="text" id="editReqText" maxlength="300" data-draft="text" data-enter="saveedit" value="' + esc(ed.d.text) + '">' +
+            '<label class="field" for="editReqCat">Category</label><select id="editReqCat" data-draft="cat">' +
+            cats.map(function (c) { return '<option' + (c === ed.d.cat ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select>' +
+            (r.answered ? '<label class="field" for="editReqNote">How it was answered (optional)</label><input type="text" id="editReqNote" maxlength="300" data-draft="note" data-enter="saveedit" value="' + esc(ed.d.note) + '">' : '') +
+            (ed.err ? '<p class="small" style="color:var(--danger);margin-top:8px" role="alert">' + esc(ed.err) + '</p>' : '') +
+            '<div class="actions"><button class="btn small primary" data-act="saveedit">Save changes</button><button class="btn small quiet" data-act="canceledit">Cancel</button></div>' +
+            '<p class="small" style="margin-top:10px">Prayed count and dates stay as they are.</p></li>';
+          return;
+        }
+        h += '<li class="card"><p class="req-text">' + esc(r.text) + '</p>' +
+          '<div class="req-meta"><span class="pill">' + esc(r.cat) + '</span><span class="small">Added ' + niceDay(r.created) + '</span><span class="small">Prayed ' + n + (n === 1 ? ' time' : ' times') + '</span></div>';
+        var editBtn = '<button class="btn small quiet" data-act="editreq" data-id="' + r.id + '">Edit</button>';
+        if (r.answered) {
+          h += '<div class="answered-note"><b>Answered ' + niceDay(r.answered.date) + '.</b>' + (r.answered.note ? ' ' + esc(r.answered.note) : '') + '</div>' +
+            '<div class="actions"><button class="btn small quiet" data-act="reopen" data-id="' + r.id + '">Reopen</button>' + editBtn + delBtn('delreq', r.id) + '</div>';
+        } else if (ui.answering === r.id) {
+          h += '<label class="field" for="ansNote">How was it answered? (optional)</label><input type="text" id="ansNote" maxlength="300">' +
+            '<div class="actions"><button class="btn small primary" data-act="saveanswer" data-id="' + r.id + '">Save answer</button><button class="btn small quiet" data-act="cancelanswer">Cancel</button></div>';
+        } else {
+          h += '<div class="actions"><button class="btn small ' + (p ? 'on' : 'quiet') + '" data-act="pray" data-id="' + r.id + '" aria-pressed="' + p + '">Prayed today</button>' +
+            editBtn + '<button class="btn small quiet" data-act="answer" data-id="' + r.id + '">Mark answered</button>' + delBtn('delreq', r.id) + '</div>';
+        }
+        h += '</li>';
+      });
+      h += '</ul>';
+    }
+    return h;
+  }
+
+  function delBtn(act, id) {
+    var armed = ui.confirm === act + id;
+    return '<button class="btn small danger" data-act="' + act + '" data-id="' + id + '">' + (armed ? 'Tap again to delete' : 'Delete') + '</button>';
+  }
+
+  function viewJournal() {
+    var pre = ui.prefill || ''; ui.prefill = '';
+    var h = '<header><h1>Journal</h1><p class="sub">Write what\u2019s on your heart.</p></header>';
+    h += '<div class="card" style="margin-top:18px"><label class="field" for="jText" style="margin-top:0">Today\u2019s entry</label>' +
+      '<textarea id="jText" rows="6" placeholder="What are you bringing to God today?">' + esc(pre) + '</textarea>' +
+      '<label class="field" for="jThanks">Something I\u2019m thankful for (optional)</label><input type="text" id="jThanks" maxlength="200">' +
+      '<div class="actions"><button class="btn" data-act="addentry">Save entry</button></div></div>';
+    h += '<section class="section">';
+    var es = S.journal.slice().reverse();
+    if (!es.length) h += '<p class="empty">Your entries will appear here.</p>';
+    else {
+      h += '<ul class="rows">';
+      es.forEach(function (e) {
+        var d = new Date(e.date);
+        var ed = ui.editing && ui.editing.kind === 'entry' && ui.editing.id === e.id ? ui.editing : null;
+        if (ed) {
+          h += '<li class="card"><label class="field" for="editEntryText" style="margin-top:0">Edit entry</label>' +
+            '<textarea id="editEntryText" rows="6" data-draft="text">' + esc(ed.d.text) + '</textarea>' +
+            '<label class="field" for="editEntryThanks">Something I\u2019m thankful for (optional)</label><input type="text" id="editEntryThanks" maxlength="200" data-draft="thanks" data-enter="saveedit" value="' + esc(ed.d.thanks) + '">' +
+            (ed.err ? '<p class="small" style="color:var(--danger);margin-top:8px" role="alert">' + esc(ed.err) + '</p>' : '') +
+            '<div class="actions"><button class="btn small primary" data-act="saveedit">Save changes</button><button class="btn small quiet" data-act="canceledit">Cancel</button></div>' +
+            '<p class="small" style="margin-top:10px">The original date stays as it is.</p></li>';
+          return;
+        }
+        h += '<li class="card"><p class="entry-date">' + esc(d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })) + '</p>' +
+          '<p class="small">' + esc(d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })) + (e.edited ? ', edited ' + esc(niceDay(dkey(new Date(e.edited)))) : '') + '</p>' +
+          '<p class="entry-body">' + esc(e.text) + '</p>' +
+          (e.thanks ? '<p class="entry-thanks">Thankful for: ' + esc(e.thanks) + '</p>' : '') +
+          '<div class="actions"><button class="btn small quiet" data-act="editentry" data-id="' + e.id + '">Edit</button>' + delBtn('delentry', e.id) + '</div></li>';
+      });
+      h += '</ul>';
+    }
+    h += '</section>';
+    return h;
+  }
+
+  function viewReminders() {
+    var slots = S.slots.slice().sort(byTime);
+    var h = '<header><h1>Times</h1><p class="sub">Set the times you want to pray each day. They show on the Today screen while this page is open. For alarms that ring on your phone, ask Claude in chat to set them.</p></header>';
+    h += '<ul class="rows" style="margin-top:18px">';
+    slots.forEach(function (s) {
+      h += '<li class="card"><div class="slot-edit">' +
+        '<div><label class="field" style="margin-top:0" for="l' + s.id + '">Name</label><input type="text" id="l' + s.id + '" data-slot="' + s.id + '" data-field="label" maxlength="40" value="' + esc(s.label) + '"></div>' +
+        '<div><label class="field" style="margin-top:0" for="t' + s.id + '">Time</label><input type="time" id="t' + s.id + '" data-slot="' + s.id + '" data-field="time" value="' + esc(s.time) + '"></div></div>' +
+        '<div class="slot-tools"><label class="switch"><input type="checkbox" data-slot="' + s.id + '" data-field="on"' + (s.on ? ' checked' : '') + '> Remind me</label>' + delBtn('delslot', s.id) + '</div></li>';
+    });
+    h += '</ul><div class="actions"><button class="btn ghost" data-act="addslot">Add a prayer time</button></div>';
+    h += '<section class="section"><h2>Backup</h2><p class="sub" style="margin-top:0">Everything is stored on this device only. Save a copy so you can restore it later.</p>' +
+      '<p class="small" style="margin-top:8px">' + backupStatus() + '</p>' +
+      '<div class="actions"><button class="btn quiet" data-act="export">Save a backup file</button><button class="btn quiet" data-act="copybackup">Copy backup</button></div>';
+    if (ui.backupShow) {
+      h += '<label class="field" for="backupText">Select all of this text, copy it, and keep it somewhere safe</label>' +
+        '<textarea id="backupText" readonly rows="5" style="font-family:var(--sans);font-size:13px">' + esc(JSON.stringify(S, null, 2)) + '</textarea>';
+    }
+    if (ui.pendingRestore) {
+      var pd = ui.pendingRestore.data;
+      h += '<div class="card" style="margin-top:14px"><p><b>Replace what\u2019s on this device with this backup?</b></p>' +
+        '<p class="small" style="margin-top:6px">' + (ui.pendingRestore.label ? esc(ui.pendingRestore.label) + ': ' : '') + pd.requests.length + ' requests and ' + pd.journal.length + ' journal entries. A safety copy of your current data stays on this device until your next restore.</p>' +
+        '<div class="actions"><button class="btn small primary" data-act="restoreconfirm">Yes, restore</button><button class="btn small quiet" data-act="restorecancel">Cancel</button></div></div>';
+    } else {
+      h += '<label class="field" for="restoreFile">Restore from a backup file</label><input type="file" id="restoreFile" accept=".json,application/json">' +
+        '<label class="field" for="restoreText">Or paste a backup\u2019s contents</label><textarea id="restoreText" rows="3" style="font-family:var(--sans);font-size:14px"></textarea>' +
+        '<div class="actions"><button class="btn quiet" data-act="restore">Restore</button></div>';
+    }
+    h += '</section>';
+    return h;
+  }
+
+  function newSession(kind, psalm) { return { kind: kind, psalm: psalm || '', step: 0, notes: {}, done: false, saved: false }; }
+
+  function viewPray() {
+    if (ui.session) return viewSession();
+    var h = '<header><h1>Pray</h1><p class="sub">Not sure where to start? Choose a guide and follow it one step at a time.</p></header>';
+    h += '<ul class="rows" style="margin-top:18px">';
+    ['acts', 'lords'].forEach(function (k) {
+      var g = GUIDES[k];
+      h += '<li class="card"><h2 style="margin-bottom:2px">' + esc(g.name) + '</h2><p class="small">' + esc(g.tag) + '</p>' +
+        '<p style="margin-top:10px">' + esc(g.desc) + '</p><div class="actions"><button class="btn small primary" data-act="start" data-id="' + k + '">Begin</button><span class="small" style="align-self:center">' + esc(g.mins) + '</span></div></li>';
+    });
+    var pg = GUIDES.psalm;
+    h += '<li class="card"><h2 style="margin-bottom:2px">' + esc(pg.name) + '</h2><p class="small">' + esc(pg.tag) + '</p><p style="margin-top:10px">' + esc(pg.desc) + '</p><p class="small" style="margin-top:6px">' + esc(pg.mins) + '. Tap a psalm to begin.</p>';
+    PSALM_NEEDS.forEach(function (n) {
+      h += '<div class="need"><h3>' + esc(n[0]) + '</h3><div class="chiprow">';
+      n[1].forEach(function (ref) { h += '<button class="chip" data-act="startpsalm" data-id="' + esc(ref) + '">' + esc(ref.replace('Psalm ', '')) + '</button>'; });
+      h += '</div></div>';
+    });
+    h += '</li></ul>';
+    return h;
+  }
+
+  function viewSession() {
+    var ss = ui.session, steps = sessionSteps(ss), n = steps.length;
+    if (ss.done) return viewSessionDone(ss);
+    var st = steps[ss.step], last = ss.step === n - 1;
+    var h = '<header><h1>' + esc(sessionTitle(ss)) + '</h1><p class="sub">Step ' + (ss.step + 1) + ' of ' + n + (st.mins ? '. ' + esc(st.mins) + '.' : '') + '</p></header>';
+    h += '<div class="dots" aria-hidden="true">';
+    for (var i = 0; i < n; i++) h += '<span' + (i <= ss.step ? ' class="on"' : '') + '></span>';
+    h += '</div><section class="card step-card"><h2 style="margin-bottom:4px">' + esc(st.title) + '</h2>';
+    if (st.lead && ss.kind !== 'lords' && ss.kind !== 'psalm') h += '<p class="small">' + esc(st.lead) + '</p>';
+    if (st.line) h += '<p class="lordline">' + esc(st.line) + '</p>';
+    h += '<p style="margin-top:10px">' + esc(st.body) + '</p>';
+    var refs = st.refs || (ss.kind === 'lords' ? GUIDES.lords.refs : null);
+    var refsHtml = '';
+    if (refs && refs.length) {
+      if (!st.open) {
+        refsHtml += '<div class="reflinks"><span class="small">Read here:</span>' + refs.map(function (r) {
+          return '<button class="chip" data-act="ref" data-id="' + esc(r) + '" aria-pressed="' + !!ui.openRefs[r] + '">' + esc(r) + '</button>';
+        }).join('') + '</div>';
+      }
+      refs.forEach(function (r) { if (st.open || ui.openRefs[r]) refsHtml += passageBox(r); });
+    }
+    if (st.open) h += refsHtml;
+    if (st.prompts && st.prompts.length) {
+      h += '<ul class="prompts">' + st.prompts.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>';
+    }
+    if (!st.open) h += refsHtml;
+    if (ss.kind === 'lords') h += '<p class="small" style="margin-top:10px">' + esc(GUIDES.lords.note) + '</p>';
+    if (st.requests) {
+      var open = S.requests.filter(function (r) { return !r.answered; });
+      h += '<div class="need"><h3>Your open requests</h3>';
+      if (!open.length) h += '<p class="small">You have no open requests yet. Add some under Requests and they\u2019ll appear here.</p>';
+      else {
+        h += '<ul class="rows">';
+        open.forEach(function (r) {
+          var p = prayedToday(r);
+          h += '<li class="row"><div class="grow"><p>' + esc(r.text) + '</p><span class="pill">' + esc(r.cat) + '</span></div>' +
+            '<button class="btn small ' + (p ? 'on' : 'quiet') + '" data-act="pray" data-id="' + r.id + '" aria-pressed="' + p + '">' + (p ? 'Prayed' : 'Prayed today') + '</button></li>';
+        });
+        h += '</ul>';
+      }
+      h += '</div>';
+    }
+    if (st.ph !== '') {
+      h += '<textarea rows="3" data-note="1" aria-label="Your notes for this step" placeholder="' + esc(st.ph || 'Your words (optional)') + '">' + esc(ss.notes[ss.step] || '') + '</textarea>';
+    }
+    h += '<div class="actions" style="margin-top:16px">' +
+      (ss.step > 0 ? '<button class="btn quiet" data-act="sback">Back</button>' : '') +
+      '<button class="btn" data-act="snext">' + (last ? 'Finish' : 'Next') + '</button></div></section>';
+    h += '<div class="actions"><button class="btn ghost" data-act="leave">Leave this guide</button>' +
+      '<button class="btn ghost" data-act="focustoggle">' + (ui.focus === false ? 'Focus mode' : 'Show menu') + '</button></div>';
+    return h;
+  }
+
+  function viewSessionDone(ss) {
+    var h = '<header><h1>Amen.</h1><p class="sub">You finished ' + esc(sessionTitle(ss)) + '.</p></header><section class="card step-card">';
+    var txt = sessionText(ss);
+    if (txt) {
+      h += ss.saved ? '<p>Saved to your journal.</p>' : '<p>You wrote notes during this prayer.</p><div class="actions"><button class="btn" data-act="sfsave">Save notes to journal</button></div>';
+    } else h += '<p>Come back to this guide any time.</p>';
+    var t = dkey(), undone = S.slots.slice().sort(byTime).filter(function (sl) { return sl.on && !isDone(sl.id, t); });
+    if (undone.length) {
+      h += '<div class="need"><h3>Mark a prayer time as prayed</h3><div class="actions" style="margin-top:0">' + undone.map(function (sl) {
+        return '<button class="btn small quiet" data-act="slot" data-id="' + sl.id + '">' + esc(sl.label) + '</button>';
+      }).join('') + '</div></div>';
+    }
+    h += '<div class="actions" style="margin-top:18px"><button class="btn quiet" data-act="leave">Back to guides</button></div></section>';
+    return h;
+  }
+
+  /* ---------- render ---------- */
+  var wakeLock = null, wakePending = false;
+  function syncWake(want) {
+    try {
+      if (want && !wakeLock && !wakePending && navigator.wakeLock && navigator.wakeLock.request) {
+        wakePending = true;
+        navigator.wakeLock.request('screen').then(function (l) {
+          wakePending = false; wakeLock = l;
+          if (l && l.addEventListener) l.addEventListener('release', function () { wakeLock = null; });
+        }, function () { wakePending = false; });
+      } else if (!want && wakeLock) {
+        var l2 = wakeLock; wakeLock = null; l2.release();
+      }
+    } catch (e) { wakePending = false; }
+  }
+  function render() {
+    var v = tab === 'today' ? viewToday() : tab === 'pray' ? viewPray() : tab === 'week' ? viewWeek() : tab === 'requests' ? viewRequests() : tab === 'journal' ? viewJournal() : viewReminders();
+    var app = document.getElementById('app');
+    app.innerHTML = (ui.flash ? '<div class="toast" role="status">' + esc(ui.flash) + '</div>' : '') + v;
+    hydratePassages();
+    var btns = document.querySelectorAll('nav button');
+    for (var i = 0; i < btns.length; i++) {
+      if (btns[i].dataset.id === tab) btns[i].setAttribute('aria-current', 'page'); else btns[i].removeAttribute('aria-current');
+    }
+    var inGuide = tab === 'pray' && !!ui.session && !ui.session.done;
+    var focusOn = inGuide && ui.focus !== false;
+    if (document.body && document.body.classList) document.body.classList.toggle('focus', focusOn);
+    syncWake(focusOn);
+  }
+  function flash(msg) { ui.flash = msg; render(); }
+  function val(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+  /* ---------- actions ---------- */
+  function act(a, id) {
+    var t = dkey(), r, i;
+    if (a !== 'delreq' && a !== 'delentry' && a !== 'delslot') ui.confirm = null;
+    switch (a) {
+      case 'tab': tab = id; ui.answering = null; ui.confirm = null; ui.flash = ''; ui.editing = null; ui.pendingRestore = null; ui.backupShow = false; if (id === 'week') ui.weekOffset = 0; render(); window.scrollTo(0, 0); return;
+      case 'slot':
+        S.done[t] = S.done[t] || {};
+        if (S.done[t][id]) delete S.done[t][id]; else S.done[t][id] = true;
+        if (!Object.keys(S.done[t]).length) delete S.done[t];
+        save(); render(); return;
+      case 'pray':
+        r = S.requests.filter(function (x) { return x.id === id; })[0]; if (!r) return;
+        r.prayed = r.prayed || [];
+        i = r.prayed.indexOf(t);
+        if (i === -1) { r.prayed.push(t); r.prayed.sort(); } else r.prayed.splice(i, 1);
+        save(); render(); return;
+      case 'addreq':
+        var text = val('reqText');
+        if (!text) { flash('Write a request first.'); return; }
+        S.requests.push({ id: uid(), text: text, cat: val('reqCat') || 'Other', created: t, prayed: [], answered: null });
+        ui.filter = 'open'; ui.flash = ''; save(); render(); return;
+      case 'filter': ui.filter = id; render(); return;
+      case 'answer': ui.answering = id; render(); var n = document.getElementById('ansNote'); if (n) n.focus(); return;
+      case 'cancelanswer': ui.answering = null; render(); return;
+      case 'saveanswer':
+        r = S.requests.filter(function (x) { return x.id === id; })[0]; if (!r) return;
+        r.answered = { date: t, note: val('ansNote') };
+        ui.answering = null; save(); render(); return;
+      case 'reopen':
+        r = S.requests.filter(function (x) { return x.id === id; })[0]; if (r) r.answered = null;
+        save(); render(); return;
+      case 'delreq': case 'delentry': case 'delslot':
+        if (ui.confirm !== a + id) { ui.confirm = a + id; render(); return; }
+        ui.confirm = null;
+        if (a === 'delreq') S.requests = S.requests.filter(function (x) { return x.id !== id; });
+        if (a === 'delentry') S.journal = S.journal.filter(function (x) { return x.id !== id; });
+        if (a === 'delslot') S.slots = S.slots.filter(function (x) { return x.id !== id; });
+        save(); render(); return;
+      case 'addentry':
+        var body = val('jText');
+        if (!body) { flash('Write something first.'); return; }
+        S.journal.push({ id: uid(), date: new Date().toISOString(), text: body, thanks: val('jThanks') });
+        ui.flash = 'Entry saved.'; save(); render(); return;
+      case 'addslot':
+        S.slots.push({ id: uid(), label: 'Prayer', time: '12:00', on: true });
+        save(); render(); return;
+      case 'newverse':
+        todaysVerse(); S.verse.offset++; save(); render(); return;
+      case 'verseentry':
+        var vv = todaysVerse(); ui.prefill = 'On ' + vv.ref + ': ';
+        tab = 'journal'; ui.flash = ''; render(); window.scrollTo(0, 0);
+        var jt = document.getElementById('jText');
+        if (jt) { jt.focus(); jt.setSelectionRange(jt.value.length, jt.value.length); }
+        return;
+      case 'start':
+        ui.session = newSession(id); ui.openRefs = {}; ui.flash = ''; render(); window.scrollTo(0, 0); return;
+      case 'startpsalm':
+        ui.session = newSession('psalm', id); ui.openRefs = {}; ui.flash = ''; render(); window.scrollTo(0, 0); return;
+      case 'snext':
+        if (ui.session) {
+          if (ui.session.step >= sessionSteps(ui.session).length - 1) ui.session.done = true; else ui.session.step++;
+          render(); window.scrollTo(0, 0);
+        }
+        return;
+      case 'sback':
+        if (ui.session && ui.session.step > 0) { ui.session.step--; render(); window.scrollTo(0, 0); }
+        return;
+      case 'leave':
+        ui.session = null; ui.openRefs = {}; render(); window.scrollTo(0, 0); return;
+      case 'sfsave':
+        if (ui.session) {
+          var stxt = sessionText(ui.session);
+          if (stxt) { S.journal.push({ id: uid(), date: new Date().toISOString(), text: stxt, thanks: '' }); ui.session.saved = true; save(); }
+          render();
+        }
+        return;
+      case 'part':
+        ui.part = id; ui.partManual = true; render(); return;
+      case 'evetoggle':
+        ui.eveOpen = ui.eveOpen === t ? '' : t; render(); return;
+      case 'everead':
+        S.eveRead = S.eveRead || {};
+        if (S.eveRead[t]) delete S.eveRead[t]; else S.eveRead[t] = true;
+        save(); render(); return;
+      case 'eveentry':
+        var evx = todaysEvening();
+        ui.prefill = 'On ' + (evx ? evx.ref : 'tonight\u2019s reading') + ': ';
+        tab = 'journal'; ui.flash = ''; render(); window.scrollTo(0, 0);
+        var jev = document.getElementById('jText');
+        if (jev) { jev.focus(); jev.setSelectionRange(jev.value.length, jev.value.length); }
+        return;
+      case 'focustoggle':
+        ui.focus = ui.focus === false; render(); window.scrollTo(0, 0); return;
+      case 'weekprev':
+        ui.weekOffset = (ui.weekOffset || 0) - 1; render(); return;
+      case 'weeknext':
+        if ((ui.weekOffset || 0) < 0) ui.weekOffset++; render(); return;
+      case 'weekentry':
+        var wk = weekDays(ui.weekOffset || 0);
+        ui.prefill = 'Weekly review, week of ' + wk[0].toLocaleDateString(undefined, { month: 'long', day: 'numeric' }) +
+          '\n\nWhere I saw God at work:\n\nWhat I\u2019m thankful for:\n\nWhat I\u2019ll carry into next week:\n';
+        tab = 'journal'; ui.flash = ''; render(); window.scrollTo(0, 0);
+        var jw = document.getElementById('jText');
+        if (jw) { jw.focus(); jw.setSelectionRange(jw.value.length, jw.value.length); }
+        return;
+      case 'devtoggle':
+        ui.devOpen = ui.devOpen === t ? '' : t; render(); return;
+      case 'devread':
+        S.devRead = S.devRead || {};
+        if (S.devRead[t]) delete S.devRead[t]; else S.devRead[t] = true;
+        save(); render(); return;
+      case 'deventry':
+        ui.prefill = 'On ' + todaysDevotional().ref + ': ';
+        tab = 'journal'; ui.flash = ''; render(); window.scrollTo(0, 0);
+        var jd = document.getElementById('jText');
+        if (jd) { jd.focus(); jd.setSelectionRange(jd.value.length, jd.value.length); }
+        return;
+      case 'ref':
+        ui.openRefs[id] = !ui.openRefs[id]; render(); return;
+      case 'retrypassage':
+        delete passages[id]; render(); return;
+      case 'newquote':
+        todaysQuote(); S.quote.offset++; save(); render(); return;
+      case 'quoteentry':
+        var qq = todaysQuote(); ui.prefill = 'Reflecting on ' + qq.by + ': ';
+        tab = 'journal'; ui.flash = ''; render(); window.scrollTo(0, 0);
+        var jq = document.getElementById('jText');
+        if (jq) { jq.focus(); jq.setSelectionRange(jq.value.length, jq.value.length); }
+        return;
+      case 'editreq':
+        r = S.requests.filter(function (x) { return x.id === id; })[0]; if (!r) return;
+        ui.editing = { kind: 'req', id: id, err: '', d: { text: r.text, cat: r.cat, note: r.answered ? (r.answered.note || '') : '' } };
+        ui.answering = null; ui.confirm = null; render();
+        var ie = document.getElementById('editReqText'); if (ie) ie.focus();
+        return;
+      case 'editentry':
+        var en = S.journal.filter(function (x) { return x.id === id; })[0]; if (!en) return;
+        ui.editing = { kind: 'entry', id: id, err: '', d: { text: en.text, thanks: en.thanks || '' } };
+        ui.confirm = null; render();
+        var it = document.getElementById('editEntryText'); if (it) it.focus();
+        return;
+      case 'canceledit':
+        ui.editing = null; render(); return;
+      case 'saveedit':
+        var ed = ui.editing; if (!ed) return;
+        syncDraft();
+        var etxt = (ed.d.text || '').trim();
+        if (!etxt) { ed.err = ed.kind === 'req' ? 'Write a request first.' : 'Write something first.'; render(); return; }
+        if (ed.kind === 'req') {
+          var er = S.requests.filter(function (x) { return x.id === ed.id; })[0];
+          if (er) { er.text = etxt; if (ed.d.cat) er.cat = ed.d.cat; if (er.answered) er.answered.note = (ed.d.note || '').trim(); }
+        } else {
+          var ee = S.journal.filter(function (x) { return x.id === ed.id; })[0];
+          if (ee) { ee.text = etxt; ee.thanks = (ed.d.thanks || '').trim(); ee.edited = new Date().toISOString(); }
+        }
+        ui.editing = null; ui.flash = ''; save(); render(); return;
+      case 'export': doExport(); return;
+      case 'copybackup': doCopyBackup(); return;
+      case 'restore':
+        var rt = val('restoreText');
+        if (!rt) { flash('Paste your backup first, or choose a backup file.'); return; }
+        prepareRestore(rt, ''); return;
+      case 'restoreconfirm': applyRestore(); return;
+      case 'restorecancel': ui.pendingRestore = null; render(); return;
+    }
+  }
+
+  function backupStatus() {
+    if (!S.lastBackup) return 'You haven\u2019t saved a backup yet.';
+    var t = new Date(S.lastBackup);
+    if (isNaN(t.getTime())) return 'You haven\u2019t saved a backup yet.';
+    var days = Math.floor((Date.now() - t.getTime()) / 86400000);
+    return 'Last backed up ' + t.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) + (days >= 7 ? '. It\u2019s been a while, so now is a good time for a new one.' : '.');
+  }
+  function backupData(stamp) {
+    var o = {};
+    for (var k in S) o[k] = S[k];
+    o.lastBackup = stamp;
+    return JSON.stringify(o, null, 2);
+  }
+  function backupDone(stamp, msg) { S.lastBackup = stamp; save(); flash(msg); }
+  function browserDownload(filename, text) {
+    var blob = new Blob([text], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename; a.style.display = 'none';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+  }
+  function doExport() {
+    var stamp = new Date().toISOString(), data = backupData(stamp), filename = 'prayer-book-backup-' + dkey() + '.json';
+    function fallback() {
+      try { browserDownload(filename, data); backupDone(stamp, 'Backup saved. Look in your Downloads folder.'); }
+      catch (e) { flash('Couldn\u2019t save a file here. Try Copy backup instead.'); }
+    }
+    if (window.claude && window.claude.use) {
+      window.claude.use('downloads').then(function (dl) {
+        if (!dl) { fallback(); return; }
+        return dl.save({ filename: filename, data: data }).then(function () { backupDone(stamp, 'Backup saved.'); }, function (err) {
+          if (err && err.code === 'declined') return;
+          flash('Couldn\u2019t save the backup. Try Copy backup instead.');
+        });
+      }, fallback);
+    } else fallback();
+  }
+  function doCopyBackup() {
+    var stamp = new Date().toISOString(), data = backupData(stamp);
+    function shown() { ui.backupShow = true; flash('Couldn\u2019t copy automatically. Select the text below and copy it yourself.'); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(data).then(function () { ui.backupShow = false; backupDone(stamp, 'Backup copied. Paste it into a note or message and keep it safe.'); }, shown);
+    } else shown();
+  }
+  function prepareRestore(raw, label) {
+    var d = null;
+    try { d = JSON.parse(raw); } catch (e) {}
+    if (!d || !Array.isArray(d.slots) || !Array.isArray(d.requests) || !Array.isArray(d.journal) || !d.done || typeof d.done !== 'object') {
+      ui.pendingRestore = null; flash('That doesn\u2019t look like a Prayer Book backup.'); return;
+    }
+    ui.pendingRestore = { data: d, label: label || '' }; ui.flash = ''; render();
+  }
+  function applyRestore() {
+    var pr = ui.pendingRestore; if (!pr) return;
+    var d = pr.data;
+    try { localStorage.setItem(KEY + ':before-restore', JSON.stringify(S)); } catch (e) {}
+    S = {
+      slots: d.slots, done: d.done || {}, requests: d.requests, journal: d.journal,
+      verse: d.verse || { day: '', offset: 0 }, quote: d.quote || { day: '', offset: 0 }, devRead: d.devRead || {}, eveRead: d.eveRead || {},
+      lastBackup: typeof d.lastBackup === 'string' ? d.lastBackup : ''
+    };
+    ui.pendingRestore = null; ui.editing = null; save(); flash('Backup restored.');
+  }
+  function syncDraft() {
+    var ed = ui.editing; if (!ed) return;
+    var map = ed.kind === 'req' ? { text: 'editReqText', cat: 'editReqCat', note: 'editReqNote' } : { text: 'editEntryText', thanks: 'editEntryThanks' };
+    for (var k in map) { var el = document.getElementById(map[k]); if (el && typeof el.value === 'string') ed.d[k] = el.value; }
+  }
+
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest ? e.target.closest('[data-act]') : null;
+    if (el) act(el.getAttribute('data-act'), el.getAttribute('data-id'));
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      var t0 = e.target, en0 = t0 && t0.getAttribute && t0.getAttribute('data-enter');
+      if (en0) { e.preventDefault(); act(en0, null); return; }
+    }
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var el = e.target;
+    if (el && el.getAttribute && el.getAttribute('role') === 'button' && el.getAttribute('data-act')) {
+      e.preventDefault(); act(el.getAttribute('data-act'), el.getAttribute('data-id'));
+    }
+  });
+  document.addEventListener('input', function (e) {
+    var el = e.target;
+    if (!el || !el.getAttribute) return;
+    if (el.getAttribute('data-note') && ui.session) ui.session.notes[ui.session.step] = el.value;
+    var dk = el.getAttribute('data-draft');
+    if (dk && ui.editing) ui.editing.d[dk] = el.value;
+  });
+  document.addEventListener('change', function (e) {
+    var el = e.target;
+    if (!el || !el.getAttribute) return;
+    var dk = el.getAttribute('data-draft');
+    if (dk && ui.editing) { ui.editing.d[dk] = el.value; return; }
+    if (el.id === 'restoreFile') {
+      var file = el.files && el.files[0]; if (!file) return;
+      var fr = new FileReader();
+      fr.onload = function () { prepareRestore(String(fr.result || ''), file.name); };
+      fr.onerror = function () { flash('Couldn’t read that file.'); };
+      fr.readAsText(file); return;
+    }
+    var id = el.getAttribute('data-slot');
+    if (!id) return;
+    var s = S.slots.filter(function (x) { return x.id === id; })[0]; if (!s) return;
+    var f = el.getAttribute('data-field');
+    if (f === 'on') s[f] = el.checked;
+    else if (f === 'time') { if (!el.value) return; s[f] = el.value; }
+    else s[f] = el.value.trim() || 'Prayer';
+    save();
+    if (f !== 'label') render();
+  });
+
+  setInterval(function () { if (tab === 'today' && !document.hidden) render(); }, 30000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) { wakeLock = null; wakePending = false; if (tab === 'today' || ui.session) render(); } });
+  render();
+})();
+</script>
+</body>
+</html>
